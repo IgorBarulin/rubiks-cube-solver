@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Model;
+using Assets.Scripts.Solvers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class CubeView2D : UIBehaviour
 
         _cube = new Cube();
         UpdateView(_cube);
+
+        //Shuffle();
     }
 
     public void UpdateView(Cube cube)
@@ -37,6 +40,12 @@ public class CubeView2D : UIBehaviour
         {
             _facelets[i].color = _colors[faceletColors[i]];
         }
+    }
+
+    private void Shuffle()
+    {
+        _cube.Move("L R D' F' L' F D R' D2 L2 F' U F' U2 D");
+        UpdateView(_cube);
     }
 
     private void Update()
@@ -129,6 +138,16 @@ public class CubeView2D : UIBehaviour
         else if (Input.GetKeyDown(KeyCode.D))
         {
             _cube.Move("D");
+            UpdateView(_cube);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            new Solver().SolveCross(_cube);
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Backspace)) 
+        {
+            new Solver().SolveCross(_cube);
             UpdateView(_cube);
         }
     }
