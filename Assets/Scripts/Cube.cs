@@ -73,10 +73,10 @@ namespace Assets.Scripts.Model
             new byte[FACELETS_ON_CORNER_AMOUNT] {0, 2, 3}, // UFL - 1
             new byte[FACELETS_ON_CORNER_AMOUNT] {0, 3, 4}, // ULB - 2
             new byte[FACELETS_ON_CORNER_AMOUNT] {0, 4, 1}, // URB - 3
-            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 2, 1}, // RFD - 4
-            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 3, 2}, // FLD - 5
-            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 4, 3}, // LBD - 6
-            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 1, 4}  // RBD - 7 
+            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 2, 1}, // DRF - 4
+            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 3, 2}, // DLF - 5
+            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 4, 3}, // DBL - 6
+            new byte[FACELETS_ON_CORNER_AMOUNT] {5, 1, 4}  // DRB - 7 
         };
 
         private static readonly byte[][] _cornerFacelet = new byte[CORNERS_AMOUNT][]
@@ -85,10 +85,10 @@ namespace Assets.Scripts.Model
             new byte[FACELETS_ON_CORNER_AMOUNT] {06, 16, 26}, // UFL - 1
             new byte[FACELETS_ON_CORNER_AMOUNT] {00, 24, 34}, // ULB - 2
             new byte[FACELETS_ON_CORNER_AMOUNT] {02, 32, 10}, // URB - 3
-            new byte[FACELETS_ON_CORNER_AMOUNT] {42, 20, 14}, // RFD - 4
-            new byte[FACELETS_ON_CORNER_AMOUNT] {40, 28, 22}, // FLD - 5
-            new byte[FACELETS_ON_CORNER_AMOUNT] {46, 36, 30}, // LBD - 6
-            new byte[FACELETS_ON_CORNER_AMOUNT] {44, 12, 38}  // RBD - 7
+            new byte[FACELETS_ON_CORNER_AMOUNT] {42, 20, 14}, // DFR - 4
+            new byte[FACELETS_ON_CORNER_AMOUNT] {40, 28, 22}, // DLF - 5
+            new byte[FACELETS_ON_CORNER_AMOUNT] {46, 36, 30}, // DBL - 6
+            new byte[FACELETS_ON_CORNER_AMOUNT] {44, 12, 38}  // DRB - 7
         };
 
         private static readonly byte[][] _edgeMap = new byte[EDGES_AMOUNT][]
@@ -97,14 +97,14 @@ namespace Assets.Scripts.Model
             new byte[FACELETS_ON_EDGE_AMOUNT] {0, 2}, // UF - 1
             new byte[FACELETS_ON_EDGE_AMOUNT] {0, 3}, // UL - 2
             new byte[FACELETS_ON_EDGE_AMOUNT] {0, 4}, // UB - 3
-            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 1}, // RD - 4
-            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 2}, // FD - 5
-            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 3}, // LD - 6
-            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 4}, // BD - 7
-            new byte[FACELETS_ON_EDGE_AMOUNT] {2, 1}, // RF - 8
+            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 1}, // DR - 4
+            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 2}, // DF - 5
+            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 3}, // DL - 6
+            new byte[FACELETS_ON_EDGE_AMOUNT] {5, 4}, // DB - 7
+            new byte[FACELETS_ON_EDGE_AMOUNT] {2, 1}, // FR - 8
             new byte[FACELETS_ON_EDGE_AMOUNT] {2, 3}, // FL - 9
-            new byte[FACELETS_ON_EDGE_AMOUNT] {4, 3}, // LB - 10
-            new byte[FACELETS_ON_EDGE_AMOUNT] {4, 1}  // RB - 11
+            new byte[FACELETS_ON_EDGE_AMOUNT] {4, 3}, // BL - 10
+            new byte[FACELETS_ON_EDGE_AMOUNT] {4, 1}  // BR - 11
         };
 
         private static readonly byte[][] EdgeFacelet = new byte[EDGES_AMOUNT][]
@@ -113,14 +113,14 @@ namespace Assets.Scripts.Model
             new byte[FACELETS_ON_EDGE_AMOUNT] {05, 17}, // UF - 1
             new byte[FACELETS_ON_EDGE_AMOUNT] {07, 25}, // UL - 2
             new byte[FACELETS_ON_EDGE_AMOUNT] {01, 33}, // UB - 3
-            new byte[FACELETS_ON_EDGE_AMOUNT] {43, 13}, // RD - 4
-            new byte[FACELETS_ON_EDGE_AMOUNT] {41, 21}, // FD - 5
-            new byte[FACELETS_ON_EDGE_AMOUNT] {47, 29}, // LD - 6
-            new byte[FACELETS_ON_EDGE_AMOUNT] {45, 37}, // BD - 7
-            new byte[FACELETS_ON_EDGE_AMOUNT] {19, 15}, // RF - 8
+            new byte[FACELETS_ON_EDGE_AMOUNT] {43, 13}, // DR - 4
+            new byte[FACELETS_ON_EDGE_AMOUNT] {41, 21}, // DF - 5
+            new byte[FACELETS_ON_EDGE_AMOUNT] {47, 29}, // DL - 6
+            new byte[FACELETS_ON_EDGE_AMOUNT] {45, 37}, // DB - 7
+            new byte[FACELETS_ON_EDGE_AMOUNT] {19, 15}, // FR - 8
             new byte[FACELETS_ON_EDGE_AMOUNT] {23, 27}, // FL - 9
-            new byte[FACELETS_ON_EDGE_AMOUNT] {35, 31}, // LB - 10
-            new byte[FACELETS_ON_EDGE_AMOUNT] {39, 11}  // RB - 11
+            new byte[FACELETS_ON_EDGE_AMOUNT] {35, 31}, // BL - 10
+            new byte[FACELETS_ON_EDGE_AMOUNT] {39, 11}  // BR - 11
         };
 
         private static readonly string[] _validMoves = "U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B'".Split(' ');
@@ -172,7 +172,7 @@ namespace Assets.Scripts.Model
         /// <summary>
         /// Совершает операцию над кубом.
         /// Принимает комбинацию команд, разделенных пробелами.
-        /// Доступные команды: U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B
+        /// Доступные команды: U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B.
         /// </summary>
         public void Move(string combination)
         {
@@ -210,7 +210,7 @@ namespace Assets.Scripts.Model
 
         /// <summary>
         /// Цвета наклеек в текущей конфигурации куба
-        /// </summary>  
+        /// </summary>
         public byte[] GetFaceletColors()
         {
             byte[] facelets = new byte[FACELETS_AMOUNT];
