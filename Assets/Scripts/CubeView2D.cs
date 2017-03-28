@@ -2,6 +2,7 @@
 using Assets.Scripts.Solvers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -29,7 +30,7 @@ public class CubeView2D : UIBehaviour
         _cube = new Cube();
         UpdateView(_cube);
 
-        //Shuffle();
+        Shuffle();
     }
 
     public void UpdateView(Cube cube)
@@ -44,7 +45,7 @@ public class CubeView2D : UIBehaviour
 
     private void Shuffle()
     {
-        _cube.Move("L R D' F' L' F D R' D2 L2 F' U F' U2 D");
+        _cube.Move("R F' L' D' U' L2 R2 B L' B2");//"R F' U' L B D");
         UpdateView(_cube);
     }
 
@@ -149,6 +150,11 @@ public class CubeView2D : UIBehaviour
         {
             new Solver().SolveCross(_cube);
             UpdateView(_cube);
+        }
+
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            
         }
     }
 }

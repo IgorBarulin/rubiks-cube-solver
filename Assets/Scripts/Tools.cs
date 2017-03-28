@@ -31,5 +31,36 @@ namespace Assets.Scripts.Model
 
             return -1;
         }
+
+        public static bool HaveIntersections<T>(this IEnumerable<T> a, IEnumerable<T> b)
+        {
+            foreach (var item in a)
+                if (b.Contains(item))
+                    return true;
+            return false;
+        }
+
+        public static IEnumerable<string> ReverseIntersections(this IEnumerable<string> a, IEnumerable<string> b)
+        {
+            List<string> result = new List<string>();
+
+            foreach (var i in a)
+            {
+                bool contains = false;
+                foreach (var j in b)
+                {
+                    if (i.Contains(j))
+                    {
+                        contains = true;
+                        continue;
+                    }
+                }
+
+                if (!contains)
+                    result.Add(i);
+            }
+
+            return result;
+        }
     }
 }

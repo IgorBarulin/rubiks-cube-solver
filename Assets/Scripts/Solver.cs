@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,20 +60,58 @@ namespace Assets.Scripts.Solvers
 
         public void SolveCross(Cube cube)
         {
-            int e4 = -1;
-            int e4o = 0;
-            foreach (var cubie in cube.Edges)
+            List<string> fragile = new List<string>();
+
+            Cubie e4 = cube.Edges.Where(e => e.Position == 4).FirstOrDefault();
+            int edgePos = Array.IndexOf(cube.Edges, e4);
+            FindPath(edgePos, 4, e4.Orient, 0);
+            string move = ShortestStringInCollection(_moves);
+            Debug.Log(move);
+            if (!string.IsNullOrEmpty(move))
+                cube.Move(move);
+            fragile.AddRange(new string[] { "R", "R2", "R'", "D", "D2", "D'" });
+             
+            Cubie e5 = cube.Edges.Where(e => e.Position == 5).FirstOrDefault();
+            edgePos = Array.IndexOf(cube.Edges, e5);
+            FindPath(edgePos, 5, e5.Orient, 0);
+            var withoutFragile = _moves.ReverseIntersections(fragile);
+            move = ShortestStringInCollection(withoutFragile);
+            Debug.Log(move);
+            if (!string.IsNullOrEmpty(move))
+                cube.Move(move);
+            fragile.AddRange(new string[] { "F", "F2", "F'" });
+
+            Cubie e6 = cube.Edges.Where(e => e.Position == 6).FirstOrDefault();
+            edgePos = Array.IndexOf(cube.Edges, e6);
+            FindPath(edgePos, 6, e6.Orient, 0);
+            move = ShortestStringInCollection(_moves.ReverseIntersections(fragile));
+            Debug.Log(move);
+            if (!string.IsNullOrEmpty(move))
+                cube.Move(move);  
+            //fragile.AddRange(new string[] { "L", "L2", "L'" });
+
+            Cubie e7 = cube.Edges.Where(e => e.Position == 7).FirstOrDefault();
+            edgePos = Array.IndexOf(cube.Edges, e7);
+            FindPath(edgePos, 7, e6.Orient, 0);
+            move = ShortestStringInCollection(_moves.ReverseIntersections(fragile));            
+            Debug.Log(move);
+            if (!string.IsNullOrEmpty(move))
+                cube.Move(move);
+        }
+
+        private string ShortestStringInCollection(IEnumerable<string> collection)
+        {
+            string result = null;
+            int len = int.MaxValue;
+            foreach (var str in collection)
             {
-                e4++;
-                if (cubie.Position == 4)
+                if (!string.IsNullOrEmpty(str) && str.Length < len)
                 {
-                    e4o = cubie.Orient;
-                    break;
+                    len = str.Length;
+                    result = str;
                 }
             }
-            string move = FindMove(e4, 4, e4o, 0);
-            Debug.Log(move);
-            cube.Move(move);
+            return result;
         }
 
         public void Test(int from, int to, int currentOrient, int targetOrient)
@@ -131,6 +170,19 @@ namespace Assets.Scripts.Solvers
             return sb.ToString().Trim();
         }
 
+        private List<string> _moves = new List<string>();
+
+        private string PathToMove(int[] path)
+        {
+            StringBuilder move = new StringBuilder();
+            for (int i = 0; i < path.Length - 1; i++)
+            {
+                move.Append(_moveMtx[path[i], path[i + 1]]);
+                move.Append(' ');
+            }
+            return move.ToString().Trim();
+        }
+
         private int[] FindPath(int startPoint, int goalPoint, int startOrient, int goalOrient, int maxDepth = 5)
         {
             List<int> path = new List<int>(maxDepth);
@@ -153,6 +205,8 @@ namespace Assets.Scripts.Solvers
                 {
                     resPath = curPath;
                 }
+
+                _moves.Add(PathToMove(curPath.ToArray()));
             }
 
             foreach (var adj in GetAdjacentNodes(curPoint))
