@@ -74,20 +74,10 @@ namespace Assets.Scripts.CubeModel
         public Cubie[] Corners { get; private set; }
         public Cubie[] Edges { get; private set; }
         
-        public Cube(Cubie[] corners = null, Cubie[] edges = null)
+        public Cube(Cubie[] corners, Cubie[] edges)
         {
-            Corners = corners ?? new Cubie[CORNERS_AMOUNT]
-            {
-                new Cubie(0, 0), new Cubie(1, 0), new Cubie(2, 0), new Cubie(3, 0),
-                new Cubie(4, 0), new Cubie(5, 0), new Cubie(6, 0), new Cubie(7, 0)
-            };
-
-            Edges = edges ?? new Cubie[EDGES_AMOUNT]
-            {
-                new Cubie(0, 0), new Cubie(1, 0), new Cubie(02, 0), new Cubie(03, 0),
-                new Cubie(4, 0), new Cubie(5, 0), new Cubie(06, 0), new Cubie(07, 0),
-                new Cubie(8, 0), new Cubie(9, 0), new Cubie(10, 0), new Cubie(11, 0)
-            };
+            Corners = corners;
+            Edges = edges;
         }
 
         /// <summary>

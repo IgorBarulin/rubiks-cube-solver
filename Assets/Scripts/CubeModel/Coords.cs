@@ -119,7 +119,7 @@ namespace Assets.Scripts.CubeModel
                 }
                 else if (k != -1)
                 {
-                    s += (ushort)Tools.nChooseK(i, k);
+                    s += (ushort)Tools.NChooseK(i, k);
                 }
             }
 

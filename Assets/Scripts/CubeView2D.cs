@@ -32,7 +32,7 @@ namespace Assets.Scripts
                 _centers[i].color = _colors[i];
             }
 
-            _cube = new Cube();
+            _cube = new CubeFactory().CreateCube(null);
             UpdateView(_cube);
         }
 
