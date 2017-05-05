@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class SwipeConverter
+namespace Assets.Scripts.CubeView
 {
-    private static readonly Dictionary<string, string> _swipeMap = new Dictionary<string, string>()
+    public static class SwipeConverter
+    {
+        private static readonly Dictionary<string, string> _swipeMap = new Dictionary<string, string>()
     {
         { "L8" , "U"  }, { "R8" , "U'" }, { "U2" , "R"  }, { "D2" , "R'" },
         { "L9" , "U"  }, { "R9" , "U'" }, { "U3" , "R"  }, { "D3" , "R'" },
@@ -44,25 +46,26 @@ public static class SwipeConverter
         { "L46", "B'" }, { "R2" , "B'" }, { "U31", "B'" }, { "D12", "B'" },
     };
 
-    private static string DefineDirection(Vector2 swipeDirection)
-    {
-        if (Mathf.Abs(swipeDirection.x) > Mathf.Abs(swipeDirection.y))
-            if (swipeDirection.x < 0)
-                return "L"; //left
+        private static string DefineDirection(Vector2 swipeDirection)
+        {
+            if (Mathf.Abs(swipeDirection.x) > Mathf.Abs(swipeDirection.y))
+                if (swipeDirection.x < 0)
+                    return "L"; //left
+                else
+                    return "R"; //right
             else
-                return "R"; //right
-        else
-            if (swipeDirection.y < 0)
+                if (swipeDirection.y < 0)
                 return "D"; //down
             else
                 return "U"; //up
-    }
+        }
 
-    public static string GetMove(byte faceletId, Vector2 swipeDirection)
-    {
-        string key = DefineDirection(swipeDirection) + faceletId;
-        if (_swipeMap.ContainsKey(key))
-            return _swipeMap[key];
-        return null;
+        public static string GetMove(byte faceletId, Vector2 swipeDirection)
+        {
+            string key = DefineDirection(swipeDirection) + faceletId;
+            if (_swipeMap.ContainsKey(key))
+                return _swipeMap[key];
+            return null;
+        }
     }
 }

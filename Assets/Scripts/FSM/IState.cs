@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IState
+namespace Assets.Scripts.FSM
 {
+    public interface IState
+    {
 
+    }
 }

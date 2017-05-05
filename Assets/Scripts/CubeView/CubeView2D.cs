@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.CubeModel;
+﻿using Assets.Scripts.CubeConstruct;
+using Assets.Scripts.CubeModel;
 using Assets.Scripts.Solver;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.CubeView
 {
     public class CubeView2D : UIBehaviour
     {

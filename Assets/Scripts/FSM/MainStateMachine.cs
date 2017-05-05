@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.FSM.States;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainStateMachine : MonoBehaviour
+namespace Assets.Scripts.FSM
 {
-    public IState State { get; set; }
-
-    private void Awake()
+    public class MainStateMachine : MonoBehaviour
     {
-        State = new Cube2DState(this);
+        public IState State { get; set; }
+
+        private void Awake()
+        {
+            State = new Cube2DState(this);
+        }
     }
 }
