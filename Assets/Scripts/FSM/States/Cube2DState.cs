@@ -10,25 +10,49 @@ namespace Assets.Scripts.FSM.States
 {
     public class Cube2DState : IState
     {
-        private MainStateMachine mainStateMachine;
+        private MainStateMachine _mainStateMachine;
+
+        private Palette _palette;
+        private CubeView2D _cubeView2D;
 
         public Cube2DState(MainStateMachine mainStateMachine)
         {
-            mainStateMachine.StopAllCoroutines();
-            mainStateMachine.StartCoroutine(Process());
+            _mainStateMachine = mainStateMachine;
+
+            if (_mainStateMachine.State != null)
+                _mainStateMachine.State.Exit();
+
+            _mainStateMachine.StopAllCoroutines();
+            _mainStateMachine.StartCoroutine(EnterProcess());
         }
 
-        private IEnumerator Process()
+        public void Exit()
+        {
+            _mainStateMachine.StopAllCoroutines();
+            _mainStateMachine.StartCoroutine(ExitProcess());
+        }
+
+        private IEnumerator EnterProcess()
         {
             Transform canvas = Prefabs.Instance.Canvas.transform;
-
-            Palette palette = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["Palette"]).GetComponent<Palette>();
-            palette.transform.SetParent(canvas, false);
             yield return null;
 
-            CubeView2D cubeView2D = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["CubeView2D"]).GetComponent<CubeView2D>();
-            cubeView2D.transform.SetParent(canvas, false);
-            cubeView2D.Initialize(palette);
+            GameObject palettePrefab = Prefabs.Instance.Dictionary["Palette"];
+            _palette = PoolManager.SpawnObject(palettePrefab).GetComponent<Palette>();
+            _palette.transform.SetParent(canvas, false);
+            yield return null;
+
+            GameObject cubeView2DPrefab = Prefabs.Instance.Dictionary["CubeView2D"];
+            _cubeView2D = PoolManager.SpawnObject(cubeView2DPrefab).GetComponent<CubeView2D>();
+            _cubeView2D.transform.SetParent(canvas, false);
+            _cubeView2D.Initialize(_palette);
+            yield return null;
+        }
+
+        private IEnumerator ExitProcess()
+        {
+            PoolManager.ReleaseObject(_palette.gameObject);
+            PoolManager.ReleaseObject(_cubeView2D.gameObject);
             yield return null;
         }
     }

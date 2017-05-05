@@ -6,6 +6,6 @@ namespace Assets.Scripts.FSM
 {
     public interface IState
     {
-
+        void Exit();
     }
 }
