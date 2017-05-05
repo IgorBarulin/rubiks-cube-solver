@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Tools;
 using Assets.Scripts.CubeView;
+using Assets.Scripts.CubeConstruct;
 
 namespace Assets.Scripts.FSM.States
 {
@@ -19,8 +20,15 @@ namespace Assets.Scripts.FSM.States
 
         private IEnumerator Process()
         {
-            CubeView2D cubeView2D = Instancer.Instance.CreateCubeView2D();
-            cubeView2D.Initialize(Instancer.Instance.CreatePalette());
+            Transform canvas = Prefabs.Instance.Canvas.transform;
+
+            Palette palette = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["Palette"]).GetComponent<Palette>();
+            palette.transform.SetParent(canvas, false);
+            yield return null;
+
+            CubeView2D cubeView2D = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["CubeView2D"]).GetComponent<CubeView2D>();
+            cubeView2D.transform.SetParent(canvas, false);
+            cubeView2D.Initialize(palette);
             yield return null;
         }
     }

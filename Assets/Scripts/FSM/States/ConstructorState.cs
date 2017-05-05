@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Tools;
+﻿using Assets.Scripts.CubeConstruct;
+using Assets.Scripts.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,8 +16,14 @@ namespace Assets.Scripts.FSM.States
 
         private IEnumerator Process()
         {
-            var palette = Instancer.Instance.CreatePalette();
-            var constructor2D = Instancer.Instance.CreateConstructor2D();
+            Transform canvas = Prefabs.Instance.Canvas.transform;
+
+            var palette = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["Palette"]).GetComponent<Palette>();
+            palette.transform.SetParent(canvas, false);
+            yield return null;
+
+            var constructor2D = PoolManager.SpawnObject(Prefabs.Instance.Dictionary["Constructor2D"]).GetComponent<Constructor2D>();
+            constructor2D.transform.SetParent(canvas, false);
             constructor2D.Initialize(palette);
             yield return null;
         }

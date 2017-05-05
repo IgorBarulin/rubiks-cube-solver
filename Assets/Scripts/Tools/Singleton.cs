@@ -1,68 +1,44 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Assets.Scripts.Tools
 {
-    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
-        private static T _instance;
-
-        private static object _lock = new object();
-
         public static T Instance
         {
             get
             {
-                if (applicationIsQuitting)
+                if (instance == null)
                 {
-                    Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
-                        "' already destroyed on application quit." +
-                        " Won't create again - returning null.");
-                    return null;
-                }
-
-                lock (_lock)
-                {
-                    if (_instance == null)
+                    T[] managers = Object.FindObjectsOfType(typeof(T)) as T[];
+                    if (managers.Length != 0)
                     {
-                        _instance = (T)FindObjectOfType(typeof(T));
-
-                        if (FindObjectsOfType(typeof(T)).Length > 1)
+                        if (managers.Length == 1)
                         {
-                            Debug.LogError("[Singleton] Something went really wrong " +
-                                " - there should never be more than 1 singleton!" +
-                                " Reopening the scene might fix it.");
-                            return _instance;
-                        }
-
-                        if (_instance == null)
-                        {
-                            GameObject singleton = new GameObject();
-                            _instance = singleton.AddComponent<T>();
-                            singleton.name = "(singleton) " + typeof(T).ToString();
-
-                            DontDestroyOnLoad(singleton);
-
-                            Debug.Log("[Singleton] An instance of " + typeof(T) +
-                                " is needed in the scene, so '" + singleton +
-                                "' was created with DontDestroyOnLoad.");
+                            instance = managers[0];
+                            instance.gameObject.name = typeof(T).Name;
+                            return instance;
                         }
                         else
                         {
-                            Debug.Log("[Singleton] Using instance already created: " +
-                                _instance.gameObject.name);
+                            Debug.LogError("Class " + typeof(T).Name + " exists multiple times in violation of singleton pattern. Destroying all copies");
+                            foreach (T manager in managers)
+                            {
+                                Destroy(manager.gameObject);
+                            }
                         }
                     }
-
-                    return _instance;
+                    var go = new GameObject(typeof(T).Name, typeof(T));
+                    instance = go.GetComponent<T>();
+                    DontDestroyOnLoad(go);
                 }
+                return instance;
+            }
+            set
+            {
+                instance = value as T;
             }
         }
-
-        private static bool applicationIsQuitting = false;
-
-        public void OnDestroy()
-        {
-            applicationIsQuitting = true;
-        }
+        private static T instance;
     }
 }
