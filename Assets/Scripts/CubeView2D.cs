@@ -12,45 +12,53 @@ namespace Assets.Scripts
     public class CubeView2D : UIBehaviour
     {
         [SerializeField]
-        private float _animationaTime;
-
-        [SerializeField]
-        private Color[] _colors;
-
-        [SerializeField]
         private Image[] _centers;
 
         [SerializeField]
-        private Image[] _facelets;
+        private SwipeableFacelet2D[] _facelets;
 
         private Cube _cube;
 
-        protected override void Awake()
+        private Palette _palette;
+
+        public void Initialize(Palette palette)
         {
-            for (int i = 0; i < _centers.Length; i++)
+            _palette = palette;
+
+            for (byte cent = 0; cent < _centers.Length; cent++)
             {
-                _centers[i].color = _colors[i];
+                _centers[cent].color = _palette.Colors[cent];
+            }
+
+            for (byte i = 0; i < _facelets.Length; i++)
+            {
+                _facelets[i].Initialize(i);
+                _facelets[i].OnSwipeEnd.AddListener(Move);
             }
 
             _cube = new CubeFactory().CreateCube(null);
             UpdateView(_cube);
         }
 
+        private void Move(byte faceletId, Vector2 direction)
+        {
+            string mv = SwipeConverter.GetMove(faceletId, direction);
+            if (mv == null) return;
+            _cube.Move(mv);
+            UpdateView(_cube);
+        }
+
         public void UpdateView(Cube cube)
         {
-            var faceletColors = cube.GetFaceletColors();
+            byte[] faceletColors = cube.GetFaceletColors();
 
             for (int i = 0; i < Cube.FACELETS_AMOUNT; i++)
             {
-                _facelets[i].color = _colors[faceletColors[i]];
+                _facelets[i].SetColor(faceletColors[i], _palette.Colors[faceletColors[i]]);
             }
         }
 
-        private void Shuffle()
-        {
-            _cube.Move("R F' L' D' U' L2 R2 B L' B2");//"R F' U' L B D");
-            UpdateView(_cube);
-        }
+        #region trash
 
         private void Update()
         {
@@ -182,9 +190,11 @@ namespace Assets.Scripts
             {
                 cube.Move(c);
                 UpdateView(cube);
-                yield return new WaitForSeconds(_animationaTime);
+                yield return new WaitForSeconds(1f);
             }
         }
+
+        #endregion
     }
 }
 
