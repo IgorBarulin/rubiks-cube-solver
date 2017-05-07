@@ -25,10 +25,6 @@ namespace Assets.Scripts.FSM
             _mainStateMachine.StartCoroutine(FinishCoroutine());
         }
 
-        public virtual void ChangeState(MainState newState)
-        {
-        }
-
         protected virtual IEnumerator StartCoroutine()
         {
             yield return null;

@@ -22,7 +22,7 @@ namespace Assets.Scripts.FSM
 
         private void Awake()
         {
-            State = new Cube2DState(this);
+            State = new PlayState(this);
         }
     }
 }

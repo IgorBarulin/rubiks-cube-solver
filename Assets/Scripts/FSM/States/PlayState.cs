@@ -9,11 +9,11 @@ using System;
 
 namespace Assets.Scripts.FSM.States
 {
-    public class Cube2DState : MainState
+    public class PlayState : MainState
     {
         private CubeView2D _cubeView2D;
 
-        public Cube2DState(MainStateMachine mainStateMachine) : base(mainStateMachine)
+        public PlayState(MainStateMachine mainStateMachine) : base(mainStateMachine)
         {
             
         }
