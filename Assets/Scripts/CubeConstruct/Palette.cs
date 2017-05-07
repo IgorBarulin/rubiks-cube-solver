@@ -16,13 +16,13 @@ namespace Assets.Scripts.CubeConstruct
         [SerializeField]
         private Color _selectedColor;
         [SerializeField]
-        private Color[] _colors;
+        PaletteColors _paletteColors;
         [SerializeField]
         private Paint[] _paints;
 
-        public Color[] Colors
+        public PaletteColors PaletteColors
         {
-            get { return _colors; }
+            get { return _paletteColors; }
         }
 
         public byte SelectedId
@@ -39,19 +39,19 @@ namespace Assets.Scripts.CubeConstruct
         {
             base.Awake();
 
-            for (byte i = 0; i < _colors.Length; i++)
+            for (byte i = 0; i < _paletteColors.Colors.Length; i++)
             {
-                _paints[i].Initialize(i, _colors[i]);
+                _paints[i].Initialize(i, _paletteColors.Colors[i]);
                 _paints[i].OnPaintViewClick.AddListener(SelectColor);
             }
 
-            _selectedColor = _colors[0];
+            _selectedColor = _paletteColors.Colors[0];
         }
 
         private void SelectColor(byte id)
         {
             _selectedId = id;
-            _selectedColor = _colors[id];
+            _selectedColor = _paletteColors.Colors[id];
         }
     }
 }

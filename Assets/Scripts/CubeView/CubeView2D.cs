@@ -20,15 +20,15 @@ namespace Assets.Scripts.CubeView
 
         private Cube _cube;
 
-        private Palette _palette;
+        private Color[] _colors;
 
-        public void Initialize(Palette palette)
+        public void Initialize(Color[] colors)
         {
-            _palette = palette;
+            _colors = colors;
 
             for (byte cent = 0; cent < _centers.Length; cent++)
             {
-                _centers[cent].color = _palette.Colors[cent];
+                _centers[cent].color = _colors[cent];
             }
 
             for (byte i = 0; i < _facelets.Length; i++)
@@ -55,7 +55,7 @@ namespace Assets.Scripts.CubeView
 
             for (int i = 0; i < Cube.FACELETS_AMOUNT; i++)
             {
-                _facelets[i].SetColor(faceletColors[i], _palette.Colors[faceletColors[i]]);
+                _facelets[i].SetColor(faceletColors[i], _colors[faceletColors[i]]);
             }
         }
 

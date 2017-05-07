@@ -24,7 +24,7 @@ namespace Assets.Scripts.CubeConstruct
 
             for (byte cent = 0; cent < _centers.Length; cent++)
             {
-                _centers[cent].color = _palette.Colors[cent];
+                _centers[cent].color = _palette.PaletteColors.Colors[cent];
             }
 
             for (byte id = 0; id < _facelets2D.Length; id++)
