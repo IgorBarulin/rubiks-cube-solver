@@ -8,31 +8,17 @@ using Assets.Scripts.CubeConstruct;
 
 namespace Assets.Scripts.FSM.States
 {
-    public class Cube2DState : IState
+    public class Cube2DState : MainState
     {
-        private MainStateMachine _mainStateMachine;
-
         private Palette _palette;
         private CubeView2D _cubeView2D;
 
-        public Cube2DState(MainStateMachine mainStateMachine)
+        public Cube2DState(MainStateMachine mainStateMachine) : base(mainStateMachine)
         {
-            _mainStateMachine = mainStateMachine;
-
-            if (_mainStateMachine.State != null)
-                _mainStateMachine.State.Exit();
-
-            _mainStateMachine.StopAllCoroutines();
-            _mainStateMachine.StartCoroutine(EnterProcess());
+            
         }
 
-        public void Exit()
-        {
-            _mainStateMachine.StopAllCoroutines();
-            _mainStateMachine.StartCoroutine(ExitProcess());
-        }
-
-        private IEnumerator EnterProcess()
+        protected override IEnumerator StartCoroutine()
         {
             Transform canvas = Prefabs.Instance.Canvas.transform;
             yield return null;
@@ -49,7 +35,7 @@ namespace Assets.Scripts.FSM.States
             yield return null;
         }
 
-        private IEnumerator ExitProcess()
+        protected override IEnumerator FinishCoroutine()
         {
             PoolManager.ReleaseObject(_palette.gameObject);
             PoolManager.ReleaseObject(_cubeView2D.gameObject);
