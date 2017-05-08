@@ -9,5 +9,15 @@ namespace Assets.Scripts.FSM.States
         public SuffleState(MainStateMachine mainStateMachine) : base(mainStateMachine)
         {
         }
+
+        protected override IEnumerator StartCoroutine()
+        {
+            return base.StartCoroutine();
+        }
+
+        protected override IEnumerator FinishCoroutine()
+        {
+            return base.FinishCoroutine();
+        }
     }
 }

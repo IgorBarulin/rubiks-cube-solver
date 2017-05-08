@@ -22,7 +22,7 @@ namespace Assets.Scripts.CubeView
 
         private Color[] _colors;
 
-        public void Initialize(Color[] colors)
+        public void Initialize(Color[] colors, byte[] initialFacelets)
         {
             _colors = colors;
 
@@ -37,7 +37,7 @@ namespace Assets.Scripts.CubeView
                 _facelets[i].OnSwipeEnd.AddListener(Move);
             }
 
-            _cube = new CubeFactory().CreateCube(null);
+            _cube = new CubeFactory().CreateCube(initialFacelets);
             UpdateView(_cube);
         }
 
@@ -49,6 +49,18 @@ namespace Assets.Scripts.CubeView
             UpdateView(_cube);
         }
 
+        public byte[] GetFacelets()
+        {
+            byte[] facelets = new byte[Cube.FACELETS_AMOUNT];
+
+            for (int i = 0; i < facelets.Length; i++)
+            {
+                facelets[i] = _facelets[i].ColorId;
+            }
+
+            return facelets;
+        }
+
         public void UpdateView(Cube cube)
         {
             byte[] faceletColors = cube.GetFaceletColors();
@@ -58,144 +70,6 @@ namespace Assets.Scripts.CubeView
                 _facelets[i].SetColor(faceletColors[i], _colors[faceletColors[i]]);
             }
         }
-
-        #region trash
-
-        private void Update()
-        {
-            if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.U))
-            {
-                _cube.Move("U2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.U))
-            {
-                _cube.Move("U'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.U))
-            {
-                _cube.Move("U");
-                UpdateView(_cube);
-            }
-            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.R))
-            {
-                _cube.Move("R2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.R))
-            {
-                _cube.Move("R'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                _cube.Move("R");
-                UpdateView(_cube);
-            }
-            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.F))
-            {
-                _cube.Move("F2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.F))
-            {
-                _cube.Move("F'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.F))
-            {
-                _cube.Move("F");
-                UpdateView(_cube);
-            }
-            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.L))
-            {
-                _cube.Move("L2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.L))
-            {
-                _cube.Move("L'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.L))
-            {
-                _cube.Move("L");
-                UpdateView(_cube);
-            }
-            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.B))
-            {
-                _cube.Move("B2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.B))
-            {
-                _cube.Move("B'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.B))
-            {
-                _cube.Move("B");
-                UpdateView(_cube);
-            }
-            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(KeyCode.D))
-            {
-                _cube.Move("D2");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKey(KeyCode.Space) && Input.GetKeyDown(KeyCode.D))
-            {
-                _cube.Move("D'");
-                UpdateView(_cube);
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                _cube.Move("D");
-                UpdateView(_cube);
-            }
-
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                string[] moves = "U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B'".Split(' ');
-                StringBuilder comb = new StringBuilder();
-                int len = Random.Range(10, 100);
-                for (int i = 0; i < len; i++)
-                {
-                    for (int j = 0; j < moves.Length; j++)
-                    {
-                        comb.Append(moves[Random.Range(0, moves.Length - 1)] + " ");
-                    }
-                }
-                _cube.Move(comb.ToString().Trim());                
-                UpdateView(_cube);
-            }
-
-            else if (Input.GetKeyDown(KeyCode.T))
-            {
-                string[] moves = "U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B'".Split(' ');
-                var mvs = Search.fullSolve(_cube, 21);
-                StringBuilder result = new StringBuilder();
-                foreach (var m in mvs)
-                {
-                    result.Append(moves[m] + " ");
-                }
-                Debug.Log("KOCIEMBA: " + result);
-                StartCoroutine(Solve(_cube, result.ToString().Trim()));
-            }
-        }
-
-        private IEnumerator Solve(Cube cube, string comb)
-        {
-            var cmb = comb.Split(' ');
-            foreach (var c in cmb)
-            {
-                cube.Move(c);
-                UpdateView(cube);
-                yield return new WaitForSeconds(1f);
-            }
-        }
-
-        #endregion
     }
 }
 

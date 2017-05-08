@@ -18,7 +18,7 @@ namespace Assets.Scripts.CubeConstruct
 
         private Palette _palette;
 
-        public void Initialize(Palette palette)
+        public void Initialize(Palette palette, byte[] initialFacelets)
         {
             _palette = palette;
 
@@ -27,10 +27,22 @@ namespace Assets.Scripts.CubeConstruct
                 _centers[cent].color = _palette.PaletteColors.Colors[cent];
             }
 
-            for (byte id = 0; id < _facelets2D.Length; id++)
+            if (initialFacelets == null)
             {
-                _facelets2D[id].Initialize(id);
-                _facelets2D[id].OnClick.AddListener(SetFaceletColor);
+                for (byte i = 0; i < _facelets2D.Length; i++)
+                {
+                    _facelets2D[i].Initialize(i);
+                    _facelets2D[i].OnClick.AddListener(SetFaceletColor);
+                }
+            }
+            else
+            {
+                for (byte i = 0; i < initialFacelets.Length; i++)
+                {
+                    _facelets2D[i].Initialize(i);
+                    _facelets2D[i].SetColor(initialFacelets[i], _palette.PaletteColors.Colors[initialFacelets[i]]);
+                    _facelets2D[i].OnClick.AddListener(SetFaceletColor);
+                }
             }
         }
 
