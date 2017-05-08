@@ -46,7 +46,7 @@ namespace Assets.Scripts.CubeModel
             new byte[FACELETS_ON_CORNER_AMOUNT] {04, 08, 18}, // URF - 0
             new byte[FACELETS_ON_CORNER_AMOUNT] {06, 16, 26}, // UFL - 1
             new byte[FACELETS_ON_CORNER_AMOUNT] {00, 24, 34}, // ULB - 2
-            new byte[FACELETS_ON_CORNER_AMOUNT] {02, 32, 10}, // URB - 3
+            new byte[FACELETS_ON_CORNER_AMOUNT] {02, 32, 10}, // UBR - 3
             new byte[FACELETS_ON_CORNER_AMOUNT] {42, 20, 14}, // DFR - 4
             new byte[FACELETS_ON_CORNER_AMOUNT] {40, 28, 22}, // DLF - 5
             new byte[FACELETS_ON_CORNER_AMOUNT] {46, 36, 30}, // DBL - 6
