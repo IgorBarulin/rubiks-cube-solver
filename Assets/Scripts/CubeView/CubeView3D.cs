@@ -137,4 +137,3 @@ namespace Assets.Scripts.CubeView
         }
     }
 }
-
