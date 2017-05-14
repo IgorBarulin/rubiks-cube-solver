@@ -25,8 +25,6 @@ namespace Assets.Scripts.CubeView
         [SerializeField]
         private Facelet3D[] _facelets;
         [SerializeField]
-        private Handler3D[] _handlers;
-        [SerializeField]
         private Transform _cornersParent;
         [SerializeField]
         private Transform _edgesParent;
@@ -44,8 +42,14 @@ namespace Assets.Scripts.CubeView
             for (byte i = 0; i < Cube.FACELETS_AMOUNT; i++)
             {
                 _facelets[i].SetColor(colorIds[i], _paletteColors.Colors[colorIds[i]]);
-                _handlers[i].Initialize(i);
-                _handlers[i].OnSwipEnd.AddListener(Move);
+                //_handlers[i].Initialize(i);
+                //_handlers[i].OnSwipEnd.AddListener(Move);
+            }
+
+            FaceletHandler[] cubieHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
+            foreach (var cubieHandler in cubieHandlers)
+            {
+                cubieHandler.OnDragCommand.AddListener(Move);
             }
         }
 
@@ -62,6 +66,50 @@ namespace Assets.Scripts.CubeView
             }
         }
 
+        private void Move(string move)
+        {
+            RestoreParents();
+
+            Transform rotator;
+            Vector3 axis;
+            switch (move)
+            {
+                case "U":
+                    rotator = _centers[0];
+                    axis = Vector3.up;
+                    break;
+                case "U'":
+                    rotator = _centers[0];
+                    axis = Vector3.down;
+                    break;
+                case "R":
+                    rotator = _centers[1];
+                    axis = Vector3.forward;
+                    break;
+                case "R'":
+                    rotator = _centers[1];
+                    axis = Vector3.back;
+                    break;
+                case "F":
+                    rotator = _centers[2];
+                    axis = Vector3.right;
+                    break;
+                case "F'":
+                    rotator = _centers[2];
+                    axis = Vector3.left;
+                    break;
+                default:
+                    return;
+            }
+
+            Collider[] cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
+            foreach (var cubie in cubies)
+            {
+                cubie.transform.SetParent(rotator);
+            }
+            StartCoroutine(Rotate(rotator, axis));
+        }
+
         private void Move(byte faceletId, Vector2 direction)
         {
             RestoreParents();
@@ -70,35 +118,49 @@ namespace Assets.Scripts.CubeView
             Debug.Log(mv);
             Transform rotator;
             Collider[] cubies;
+            Vector3 axis;
             switch (mv)
             {
                 case "U":
                     rotator = _centers[0];
-                    cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
-                    foreach (var cubie in cubies)
-                    {
-                        cubie.transform.SetParent(rotator);
-                    }
-                    StartCoroutine(Rotate(rotator, Vector3.up, 90f));
+                    axis = Vector3.up;
+                    break;
+                case "U'":
+                    rotator = _centers[0];
+                    axis = Vector3.down;
+                    break;
+                case "R":
+                    rotator = _centers[1];
+                    axis = Vector3.forward;
+                    break;
+                case "R'":
+                    rotator = _centers[1];
+                    axis = Vector3.back;
                     break;
                 case "F":
                     rotator = _centers[2];
-                    cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
-                    foreach (var cubie in cubies)
-                    {
-                        cubie.transform.SetParent(rotator);
-                    }
-                    StartCoroutine(Rotate(rotator, Vector3.right, 90f));
+                    axis = Vector3.right;
+                    break;
+                case "F'":
+                    rotator = _centers[2];
+                    axis = Vector3.left;
                     break;
                 default:
                     return;
             }
+
+            cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
+            foreach (var cubie in cubies)
+            {
+                cubie.transform.SetParent(rotator);
+            }
+            StartCoroutine(Rotate(rotator, axis));
         }
 
-        private IEnumerator Rotate(Transform transform, Vector3 axis, float angle)
+        private IEnumerator Rotate(Transform transform, Vector3 axis)
         {
             float curAngle = 0;
-            while (curAngle < angle)
+            while (curAngle < 90f)
             {
                 transform.RotateAround(transform.position, axis, _rotateSpeed);
                 curAngle += _rotateSpeed;
@@ -128,11 +190,11 @@ namespace Assets.Scripts.CubeView
             Gizmos.DrawWireSphere(_centers[1].transform.position, _debugRadius);
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(_centers[2].transform.position, _debugRadius);
-            Gizmos.color = Color.white;
-            Gizmos.DrawWireSphere(_centers[3].transform.position, _debugRadius);
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_centers[4].transform.position, _debugRadius);
+            Gizmos.DrawWireSphere(_centers[3].transform.position, _debugRadius);
             Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(_centers[4].transform.position, _debugRadius);
+            Gizmos.color = Color.white;
             Gizmos.DrawWireSphere(_centers[5].transform.position, _debugRadius);
         }
     }

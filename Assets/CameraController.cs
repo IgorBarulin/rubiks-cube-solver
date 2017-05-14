@@ -32,18 +32,21 @@ public class CameraController : MonoBehaviour
         float horizontal = Input.GetAxis("Mouse X");
         float vertical = Input.GetAxis("Mouse Y");
 
-        if (Input.GetMouseButton(0) && horizontal != 0)
+        if (Input.GetKey(KeyCode.Space))
         {
-            _x.RotateAround(_target.position, Vector3.up, _speed * horizontal * Time.deltaTime);
-        }
-        if (Input.GetMouseButton(0) && vertical != 0)
-        {
-            _y.RotateAround(_target.position, Vector3.right, _speed * vertical * Time.deltaTime);
-        }
+            if (Input.GetMouseButton(0) && horizontal != 0)
+            {
+                _x.RotateAround(_target.position, Vector3.up, _speed * horizontal * Time.deltaTime);
+            }
+            if (Input.GetMouseButton(0) && vertical != 0)
+            {
+                _y.RotateAround(_target.position, Vector3.right, _speed * vertical * Time.deltaTime);
+            }
 
-        _x.transform.LookAt(_target.position);
-        _y.transform.LookAt(_target.position);
-        transform.LookAt(_target.position);
+            _x.transform.LookAt(_target.position);
+            _y.transform.LookAt(_target.position);
+            transform.LookAt(_target.position);
+        }
 
         //float horizontal = Input.GetAxis("Horizontal");
         //float vertical = Input.GetAxis("Vertical");
