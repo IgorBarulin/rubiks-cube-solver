@@ -98,6 +98,30 @@ namespace Assets.Scripts.CubeView
                     rotator = _centers[2];
                     axis = Vector3.left;
                     break;
+                case "L":
+                    rotator = _centers[3];
+                    axis = Vector3.back;
+                    break;
+                case "L'":
+                    rotator = _centers[3];
+                    axis = Vector3.forward;
+                    break;
+                case "B":
+                    rotator = _centers[4];
+                    axis = Vector3.left;
+                    break;
+                case "B'":
+                    rotator = _centers[4];
+                    axis = Vector3.right;
+                    break;
+                case "D":
+                    rotator = _centers[5];
+                    axis = Vector3.down;
+                    break;
+                case "D'":
+                    rotator = _centers[5];
+                    axis = Vector3.up;
+                    break;
                 default:
                     return;
             }
@@ -145,6 +169,30 @@ namespace Assets.Scripts.CubeView
                     rotator = _centers[2];
                     axis = Vector3.left;
                     break;
+                case "L":
+                    rotator = _centers[3];
+                    axis = Vector3.back;
+                    break;
+                case "L'":
+                    rotator = _centers[3];
+                    axis = Vector3.forward;
+                    break;
+                case "B":
+                    rotator = _centers[4];
+                    axis = Vector3.left;
+                    break;
+                case "B'":
+                    rotator = _centers[4];
+                    axis = Vector3.right;
+                    break;
+                case "D":
+                    rotator = _centers[5];
+                    axis = Vector3.down;
+                    break;
+                case "D'":
+                    rotator = _centers[5];
+                    axis = Vector3.up;
+                    break;
                 default:
                     return;
             }
@@ -182,20 +230,33 @@ namespace Assets.Scripts.CubeView
             Debug.Log("Click on facelet" + faceletId);
         }
 
+        private int _sideLabelFontSize = 40;
+
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(_centers[0].transform.position, _debugRadius);
+            GizmosUtils.DrawText(GUI.skin, "U", _centers[0].transform.position + Vector3.up * _debugRadius, Color.white, _sideLabelFontSize);
+
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(_centers[1].transform.position, _debugRadius);
+            GizmosUtils.DrawText(GUI.skin, "R", _centers[1].transform.position + Vector3.forward * _debugRadius, Color.white, _sideLabelFontSize);
+
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(_centers[2].transform.position, _debugRadius);
+            GizmosUtils.DrawText(GUI.skin, "F", _centers[2].transform.position + Vector3.right * _debugRadius, Color.white, _sideLabelFontSize);
+
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(_centers[3].transform.position, _debugRadius);
-            Gizmos.color = Color.magenta;
+            GizmosUtils.DrawText(GUI.skin, "L", _centers[3].transform.position + Vector3.back * _debugRadius, Color.white, _sideLabelFontSize);
+
+            Gizmos.color = new Color(255f, 56f, 0f); //ff8000
             Gizmos.DrawWireSphere(_centers[4].transform.position, _debugRadius);
+            GizmosUtils.DrawText(GUI.skin, "B", _centers[4].transform.position + Vector3.left * _debugRadius, Color.white, _sideLabelFontSize);
+
             Gizmos.color = Color.white;
             Gizmos.DrawWireSphere(_centers[5].transform.position, _debugRadius);
+            GizmosUtils.DrawText(GUI.skin, "D", _centers[5].transform.position + Vector3.down * _debugRadius, Color.white, _sideLabelFontSize);
         }
     }
 }

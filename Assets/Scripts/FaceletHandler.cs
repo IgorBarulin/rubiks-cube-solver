@@ -1,34 +1,28 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class OnCubieDragCommand : UnityEvent<string> { }
 
+public enum Axis { X, Y, Z }
+
+[Serializable]
+public class AxisCommand
+{
+    public Axis Axis;
+
+    public string PositiveCommand;
+    public string NegativeCommand;
+}
+
 public class FaceletHandler : MonoBehaviour
 {
     [SerializeField]
-    private string _plusXDragCommand;
+    private AxisCommand _axisCommand1;
     [SerializeField]
-    private string _minusXDragCommand;
-    [SerializeField]
-    private string _plusYDragCommand;
-    [SerializeField]
-    private string _minusYDragCommand;
-    [SerializeField]
-    private string _plusZDragCommand;
-    [SerializeField]
-    private string _minusZDragCommand;
-
-    private enum Direction
-    {
-        PlusX,
-        MinusX,
-        PlusY,
-        MinusY,
-        PlusZ,
-        MinusZ
-    }
+    private AxisCommand _axisCommand2;
 
     private bool _mouseUp = true;
 
@@ -48,28 +42,15 @@ public class FaceletHandler : MonoBehaviour
         _mouseUp = true;
 
         Vector3 mousePosition = GetMousePosition3D();
-        Direction directon = DetermineDirection(mousePosition - _startDragPosition);
-        switch (directon)
+        Vector3 direction = mousePosition - _startDragPosition;
+        Dictionary<Axis, float> customV3 = new Dictionary<Axis, float>()
         {
-            case Direction.PlusX:
-                _onDragCommand.Invoke(_plusXDragCommand);
-                break;
-            case Direction.MinusX:
-                _onDragCommand.Invoke(_minusXDragCommand);
-                break;
-            case Direction.PlusY:
-                _onDragCommand.Invoke(_plusYDragCommand);
-                break;
-            case Direction.MinusY:
-                _onDragCommand.Invoke(_minusYDragCommand);
-                break;
-            case Direction.PlusZ:
-                _onDragCommand.Invoke(_plusZDragCommand);
-                break;
-            case Direction.MinusZ:
-                _onDragCommand.Invoke(_minusZDragCommand);
-                break;
-        }
+            { Axis.X, direction.x }, { Axis.Y, direction.y }, { Axis.Z, direction.z }
+        };
+
+        AxisCommand axisCommand = Mathf.Abs(customV3[_axisCommand1.Axis]) > Mathf.Abs(customV3[_axisCommand2.Axis]) ? _axisCommand1 : _axisCommand2;
+        string command = customV3[axisCommand.Axis] > 0 ? axisCommand.PositiveCommand : axisCommand.NegativeCommand;
+        _onDragCommand.Invoke(command);
     }
 
     private Vector3 GetMousePosition3D()
@@ -78,27 +59,6 @@ public class FaceletHandler : MonoBehaviour
         mousePosition.z = Vector3.Distance(transform.position, Camera.main.transform.position);
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         return mousePosition;
-    }
-
-    private Direction DetermineDirection(Vector3 dirtyDirection)
-    {
-        float absX = Mathf.Abs(dirtyDirection.x);
-        float absY = Mathf.Abs(dirtyDirection.y);
-        float absZ = Mathf.Abs(dirtyDirection.z);
-
-        Direction direction = absX > absY ? absX > absZ ? Direction.PlusX : Direction.PlusZ : absY > absZ ? Direction.PlusY : Direction.PlusZ; ;
-
-        switch (direction)
-        {
-            case Direction.PlusX:
-                return dirtyDirection.x > 0 ? Direction.PlusX : Direction.MinusX;
-            case Direction.PlusY:
-                return dirtyDirection.y > 0 ? Direction.PlusY : Direction.MinusY;
-            case Direction.PlusZ:
-                return dirtyDirection.z > 0 ? Direction.PlusZ : Direction.MinusZ;
-            default:
-                return direction;
-        }
     }
 
     private void OnDrawGizmos()
@@ -112,6 +72,5 @@ public class FaceletHandler : MonoBehaviour
         Gizmos.DrawLine(_startDragPosition, mousePosition);
 
         GizmosUtils.DrawText(GUI.skin, dirtyDirection.ToString(), mousePosition, Color.magenta, 20, 10);
-        GizmosUtils.DrawText(GUI.skin, DetermineDirection(dirtyDirection).ToString(), mousePosition, Color.magenta, 20, 30);
     }
 }
