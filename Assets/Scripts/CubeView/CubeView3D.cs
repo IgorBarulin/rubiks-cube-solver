@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.CubeConstruct;
-using Assets.Scripts.CubeModel;
+﻿using Assets.Scripts.CubeModel;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.CubeView
@@ -9,49 +9,102 @@ namespace Assets.Scripts.CubeView
     public class CubeView3D : MonoBehaviour
     {
         [SerializeField]
-        private float _debugRadius;
+        private float _rotationSpeed;
         [SerializeField]
-        private float _rotateSpeed;
+        CubeColorSheme _colorSheme;
         [SerializeField]
-        PaletteColors _paletteColors;
-        [SerializeField]
-        private Transform[] _centers;
-        [SerializeField]
-        private MeshRenderer[] _centerFacelets;
-        [SerializeField]
-        private GameObject[] Corners;
-        [SerializeField]
-        private GameObject[] Edges;
-        [SerializeField]
-        private Facelet3D[] _facelets;
+        private Transform _centersParent;
         [SerializeField]
         private Transform _cornersParent;
         [SerializeField]
         private Transform _edgesParent;
 
-        private Queue<string> _movesQ = new Queue<string>();
+        private const float _overlapRadius = 0.8f;
 
-        private bool _rdyToNextRotate = true;
+        private Transform[] _centers;
+        private Transform[] _corners;
+        private Transform[] _edges;
+
+        private MeshRenderer[] _facelets;
+
+        private Queue<string> _cmdQ = new Queue<string>();
+
+        private bool _rdyToNextTurn = true;
+
+        private void Awake()
+        {
+            _centers = new Transform[6];
+            for (int i = 0; i < _centers.Length; i++)
+            {
+                _centers[i] = _centersParent.GetChild(i).transform;
+            }
+
+            _corners = new Transform[8];
+            for (int i = 0; i < _corners.Length; i++)
+            {
+                _corners[i] = _cornersParent.GetChild(i).transform;
+            }
+
+            _edges = new Transform[12];
+            for (int i = 0; i < _edges.Length; i++)
+            {
+                _edges[i] = _edgesParent.GetChild(i).transform;
+            }
+
+            _facelets = new MeshRenderer[48];
+            for (int i = 0; i < _corners.Length; i++)
+            {
+                MeshRenderer[] thisFacelets = _corners[i].GetComponentsInChildren<MeshRenderer>().
+                    Where(x => x.gameObject.tag == "Facelet").ToArray();
+                for (int j = 0; j < thisFacelets.Length; j++)
+                {
+                    _facelets[Cube.CornerFacelet[i][j]] = thisFacelets[j];
+                }
+            }
+            for (int i = 0; i < _edges.Length; i++)
+            {
+                MeshRenderer[] thisFacelets = _edges[i].GetComponentsInChildren<MeshRenderer>().
+                    Where(x => x.gameObject.tag == "Facelet").ToArray();
+                for (int j = 0; j < thisFacelets.Length; j++)
+                {
+                    _facelets[Cube.EdgeFacelet[i][j]] = thisFacelets[j];
+                }
+            }
+        }
 
         private void Start()
         {
-            for (byte i = 0; i < _centerFacelets.Length; i++)
+            for (int i = 0; i < _centers.Length; i++)
             {
-                _centerFacelets[i].material.color = _paletteColors.Colors[i];
+                _centers[i].GetComponentsInChildren<MeshRenderer>().
+                    Where(x => x.gameObject.tag == "Facelet").First().material.color =
+                    _colorSheme.GetColor(i);
             }
 
-            Cube tempCube = new CubeFactory().CreateCube(null);
-            byte[] colorIds = tempCube.GetFaceletColors();
-            for (byte i = 0; i < Cube.FACELETS_AMOUNT; i++)
+            for (int i = 0; i < 48; i++)
             {
-                _facelets[i].SetColor(colorIds[i], _paletteColors.Colors[colorIds[i]]);
+                _facelets[i].material.color = _colorSheme.GetColor(i / 8);
             }
 
-            FaceletHandler[] cubieHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
-            foreach (var cubieHandler in cubieHandlers)
+            FaceletHandler[] faceletHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
+            foreach (var faceletHandler in faceletHandlers)
             {
-                cubieHandler.OnDragCommand.AddListener(AddMoveInQueue);
+                faceletHandler.OnFaceletDrag.AddListener(AddCommandInQueue);
             }
+        }
+
+        private void Update()
+        {
+            if (_rdyToNextTurn && _cmdQ.Count > 0)
+            {
+                StartCoroutine(Rotate(_cmdQ.Dequeue()));
+                _rdyToNextTurn = false;
+            }
+        }
+
+        public void AddCommandInQueue(string cmd)
+        {
+            _cmdQ.Enqueue(cmd);
         }
 
         private Dictionary<string, int> _rotatorsMap = new Dictionary<string, int>
@@ -74,80 +127,41 @@ namespace Assets.Scripts.CubeView
             { "D", Vector3.down    }, { "D'", Vector3.up },
         };
 
-        private void AddMoveInQueue(string move)
+        private IEnumerator Rotate(string cmd)
         {
-            _movesQ.Enqueue(move);
-        }
+            Transform rotator = _centers[_rotatorsMap[cmd]];
+            Vector3 axis = _axisMap[cmd];
 
-        private IEnumerator Rotate(string move)
-        {
-            foreach (var corner in Corners)
-            {
-                corner.transform.SetParent(_cornersParent);
-            }
-
-            foreach (var edge in Edges)
-            {
-                edge.transform.SetParent(_edgesParent);
-            }
-
-            Transform rotator = _centers[_rotatorsMap[move]];
-
-            Collider[] cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
+            Collider[] cubies = Physics.OverlapSphere(rotator.position, _overlapRadius, LayerMask.GetMask("Cubie"));
             foreach (var cubie in cubies)
             {
                 cubie.transform.SetParent(rotator);                
             }
 
-            Vector3 axis = _axisMap[move];
-
             float curAngle = 0;
             while (curAngle < 90f)
             {
-                rotator.RotateAround(rotator.position, axis, _rotateSpeed);
-                curAngle += _rotateSpeed;
+                rotator.RotateAround(rotator.position, axis, _rotationSpeed);
+                curAngle += _rotationSpeed;
                 yield return new WaitForEndOfFrame();                
             }
 
-            _rdyToNextRotate = true;
+            RestoreCubieParents();
+
+            _rdyToNextTurn = true;
         }
 
-        private void Update()
+        private void RestoreCubieParents()
         {
-            if (_rdyToNextRotate && _movesQ.Count > 0)
+            foreach (var corner in _corners)
             {
-                StartCoroutine(Rotate(_movesQ.Dequeue()));
-                _rdyToNextRotate = false;
+                corner.SetParent(_cornersParent);
             }
-        }
 
-        private int _sideLabelFontSize = 40;
-
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(_centers[0].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "U", _centers[0].transform.position + Vector3.up * _debugRadius, Color.white, _sideLabelFontSize);
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(_centers[1].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "R", _centers[1].transform.position + Vector3.forward * _debugRadius, Color.white, _sideLabelFontSize);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(_centers[2].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "F", _centers[2].transform.position + Vector3.right * _debugRadius, Color.white, _sideLabelFontSize);
-
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_centers[3].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "L", _centers[3].transform.position + Vector3.back * _debugRadius, Color.white, _sideLabelFontSize);
-
-            Gizmos.color = new Color(255f, 56f, 0f); //ff8000
-            Gizmos.DrawWireSphere(_centers[4].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "B", _centers[4].transform.position + Vector3.left * _debugRadius, Color.white, _sideLabelFontSize);
-
-            Gizmos.color = Color.white;
-            Gizmos.DrawWireSphere(_centers[5].transform.position, _debugRadius);
-            GizmosUtils.DrawText(GUI.skin, "D", _centers[5].transform.position + Vector3.down * _debugRadius, Color.white, _sideLabelFontSize);
+            foreach (var edge in _edges)
+            {
+                edge.transform.SetParent(_edgesParent);
+            }
         }
     }
 }

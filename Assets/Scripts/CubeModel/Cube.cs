@@ -41,7 +41,7 @@ namespace Assets.Scripts.CubeModel
         public const byte FACELETS_ON_CORNER_AMOUNT = 3;
         public const byte FACELETS_ON_EDGE_AMOUNT = 2;
 
-        private static readonly byte[][] _cornerFacelet = new byte[CORNERS_AMOUNT][]
+        public static readonly byte[][] CornerFacelet = new byte[CORNERS_AMOUNT][]
         {
             new byte[FACELETS_ON_CORNER_AMOUNT] {04, 08, 18}, // URF - 0
             new byte[FACELETS_ON_CORNER_AMOUNT] {06, 16, 26}, // UFL - 1
@@ -53,7 +53,7 @@ namespace Assets.Scripts.CubeModel
             new byte[FACELETS_ON_CORNER_AMOUNT] {44, 12, 38}  // DRB - 7
         };
 
-        private static readonly byte[][] _edgeFacelet = new byte[EDGES_AMOUNT][]
+        public static readonly byte[][] EdgeFacelet = new byte[EDGES_AMOUNT][]
         {
             new byte[FACELETS_ON_EDGE_AMOUNT] {03, 09}, // UR - 0
             new byte[FACELETS_ON_EDGE_AMOUNT] {05, 17}, // UF - 1
@@ -90,22 +90,22 @@ namespace Assets.Scripts.CubeModel
             for (byte c = 0; c < CORNERS_AMOUNT; c++)
             {
                 Cubie corn = Corners[c];
-                var curCornFacelets = _cornerFacelet[corn.Position].Rotate(corn.Orient);
+                var curCornFacelets = CornerFacelet[corn.Position].Rotate(corn.Orient);
 
                 for (byte f = 0; f < FACELETS_ON_CORNER_AMOUNT; f++)
                 {
-                    facelets[_cornerFacelet[c][f]] = curCornFacelets[f];
+                    facelets[CornerFacelet[c][f]] = curCornFacelets[f];
                 }
             }
 
             for (byte e = 0; e < EDGES_AMOUNT; e++)
             {
                 Cubie edge = Edges[e];
-                byte[] curEdgeFacelets = _edgeFacelet[edge.Position].Rotate(edge.Orient);
+                byte[] curEdgeFacelets = EdgeFacelet[edge.Position].Rotate(edge.Orient);
 
                 for (byte f = 0; f < FACELETS_ON_EDGE_AMOUNT; f++)
                 {
-                    facelets[_edgeFacelet[e][f]] = curEdgeFacelets[f];
+                    facelets[EdgeFacelet[e][f]] = curEdgeFacelets[f];
                 }
             }
 

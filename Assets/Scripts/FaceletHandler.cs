@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class OnCubieDragCommand : UnityEvent<string> { }
+public class OnFaceletDrag : UnityEvent<string> { }
 
 public enum Axis { X, Y, Z }
 
@@ -28,8 +28,8 @@ public class FaceletHandler : MonoBehaviour
 
     private Vector3 _startDragPosition;
 
-    private OnCubieDragCommand _onDragCommand = new OnCubieDragCommand();
-    public OnCubieDragCommand OnDragCommand { get { return _onDragCommand; } }
+    private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
+    public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
 
     private void OnMouseDown()
     {
@@ -50,7 +50,7 @@ public class FaceletHandler : MonoBehaviour
 
         AxisCommand axisCommand = Mathf.Abs(customV3[_axisCommand1.Axis]) > Mathf.Abs(customV3[_axisCommand2.Axis]) ? _axisCommand1 : _axisCommand2;
         string command = customV3[axisCommand.Axis] > 0 ? axisCommand.PositiveCommand : axisCommand.NegativeCommand;
-        _onDragCommand.Invoke(command);
+        _onFaceletDrag.Invoke(command);
     }
 
     private Vector3 GetMousePosition3D()
