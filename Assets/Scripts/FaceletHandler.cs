@@ -42,7 +42,7 @@ public class FaceletHandler : MonoBehaviour
         _mouseUp = true;
 
         Vector3 mousePosition = GetMousePosition3D();
-        Vector3 direction = mousePosition - _startDragPosition;
+        Vector3 direction = transform.worldToLocalMatrix.MultiplyVector(mousePosition - _startDragPosition);
         Dictionary<Axis, float> customV3 = new Dictionary<Axis, float>()
         {
             { Axis.X, direction.x }, { Axis.Y, direction.y }, { Axis.Z, direction.z }

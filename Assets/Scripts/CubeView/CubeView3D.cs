@@ -97,7 +97,7 @@ namespace Assets.Scripts.CubeView
         {
             if (_rdyToNextTurn && _cmdQ.Count > 0)
             {
-                StartCoroutine(Rotate(_cmdQ.Dequeue()));
+                StartCoroutine(Turn(_cmdQ.Dequeue()));
                 _rdyToNextTurn = false;
             }
         }
@@ -107,35 +107,15 @@ namespace Assets.Scripts.CubeView
             _cmdQ.Enqueue(cmd);
         }
 
-        private Dictionary<string, int> _rotatorsMap = new Dictionary<string, int>
+        private IEnumerator Turn(string cmd)
         {
-            { "U", 0 }, { "U'", 0 },
-            { "R", 1 }, { "R'", 1 },
-            { "F", 2 }, { "F'", 2 },
-            { "L", 3 }, { "L'", 3 },
-            { "B", 4 }, { "B'", 4 },
-            { "D", 5 }, { "D'", 5 },
-        };
-
-        private Dictionary<string, Vector3> _axisMap = new Dictionary<string, Vector3>
-        {
-            { "U", Vector3.up      }, { "U'", Vector3.down },
-            { "R", Vector3.forward }, { "R'", Vector3.back },
-            { "F", Vector3.right   }, { "F'", Vector3.left },
-            { "L", Vector3.back    }, { "L'", Vector3.forward },
-            { "B", Vector3.left    }, { "B'", Vector3.right },
-            { "D", Vector3.down    }, { "D'", Vector3.up },
-        };
-
-        private IEnumerator Rotate(string cmd)
-        {
-            Transform rotator = _centers[_rotatorsMap[cmd]];
-            Vector3 axis = _axisMap[cmd];
+            Transform rotator = GetRotatorByCmd(cmd);
+            Vector3 axis = cmd.Length == 1 ? rotator.transform.forward : -rotator.transform.forward; // проверка на штрих вторым символом
 
             Collider[] cubies = Physics.OverlapSphere(rotator.position, _overlapRadius, LayerMask.GetMask("Cubie"));
             foreach (var cubie in cubies)
             {
-                cubie.transform.SetParent(rotator);                
+                cubie.transform.SetParent(rotator);
             }
 
             float curAngle = 0;
@@ -143,12 +123,39 @@ namespace Assets.Scripts.CubeView
             {
                 rotator.RotateAround(rotator.position, axis, _rotationSpeed);
                 curAngle += _rotationSpeed;
-                yield return new WaitForEndOfFrame();                
+                yield return new WaitForEndOfFrame();
             }
 
             RestoreCubieParents();
 
             _rdyToNextTurn = true;
+        }
+
+        private Transform GetRotatorByCmd(string cmd)
+        {
+            switch (cmd)
+            {
+                case "U":
+                case "U'":
+                    return _centers[0];
+                case "R":
+                case "R'":
+                    return _centers[1];
+                case "F":
+                case "F'":
+                    return _centers[2];
+                case "L":
+                case "L'":
+                    return _centers[3];
+                case "B":
+                case "B'":
+                    return _centers[4];
+                case "D":
+                case "D'":
+                    return _centers[5];
+            }
+
+            return null;
         }
 
         private void RestoreCubieParents()

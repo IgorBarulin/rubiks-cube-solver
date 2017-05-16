@@ -22,6 +22,11 @@ public class GizmosCubeCenter : MonoBehaviour
     [SerializeField]
     private Vector3 _labelOffset;
 
+    [SerializeField]
+    private bool _showLocalCoordinates = true;
+    [SerializeField]
+    private float _axisLen = 1;
+
     private void OnDrawGizmos()
     {
         Gizmos.color = _sphereColor;
@@ -34,6 +39,18 @@ public class GizmosCubeCenter : MonoBehaviour
         if (_showLabel)
         {
             GizmosUtils.DrawText(GUI.skin, _label, transform.position + _labelOffset, _labelColor, _labelFontSize);
+        }
+
+        if (_showLocalCoordinates)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + transform.right * _axisLen);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + transform.up * _axisLen);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + transform.forward * _axisLen);
         }
     }
 }
