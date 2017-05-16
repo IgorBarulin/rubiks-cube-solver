@@ -29,12 +29,15 @@ namespace Assets.Scripts.CubeView
         [SerializeField]
         private Transform _edgesParent;
 
-        // Use this for initialization
-        void Start()
+        private Queue<string> _movesQ = new Queue<string>();
+
+        private bool _rdyToNextRotate = true;
+
+        private void Start()
         {
-            for (byte cent = 0; cent < _centerFacelets.Length; cent++)
+            for (byte i = 0; i < _centerFacelets.Length; i++)
             {
-                _centerFacelets[cent].material.color = _paletteColors.Colors[cent];
+                _centerFacelets[i].material.color = _paletteColors.Colors[i];
             }
 
             Cube tempCube = new CubeFactory().CreateCube(null);
@@ -42,18 +45,41 @@ namespace Assets.Scripts.CubeView
             for (byte i = 0; i < Cube.FACELETS_AMOUNT; i++)
             {
                 _facelets[i].SetColor(colorIds[i], _paletteColors.Colors[colorIds[i]]);
-                //_handlers[i].Initialize(i);
-                //_handlers[i].OnSwipEnd.AddListener(Move);
             }
 
             FaceletHandler[] cubieHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
             foreach (var cubieHandler in cubieHandlers)
             {
-                cubieHandler.OnDragCommand.AddListener(Move);
+                cubieHandler.OnDragCommand.AddListener(AddMoveInQueue);
             }
         }
 
-        private void RestoreParents()
+        private Dictionary<string, int> _rotatorsMap = new Dictionary<string, int>
+        {
+            { "U", 0 }, { "U'", 0 },
+            { "R", 1 }, { "R'", 1 },
+            { "F", 2 }, { "F'", 2 },
+            { "L", 3 }, { "L'", 3 },
+            { "B", 4 }, { "B'", 4 },
+            { "D", 5 }, { "D'", 5 },
+        };
+
+        private Dictionary<string, Vector3> _axisMap = new Dictionary<string, Vector3>
+        {
+            { "U", Vector3.up      }, { "U'", Vector3.down },
+            { "R", Vector3.forward }, { "R'", Vector3.back },
+            { "F", Vector3.right   }, { "F'", Vector3.left },
+            { "L", Vector3.back    }, { "L'", Vector3.forward },
+            { "B", Vector3.left    }, { "B'", Vector3.right },
+            { "D", Vector3.down    }, { "D'", Vector3.up },
+        };
+
+        private void AddMoveInQueue(string move)
+        {
+            _movesQ.Enqueue(move);
+        }
+
+        private IEnumerator Rotate(string move)
         {
             foreach (var corner in Corners)
             {
@@ -64,170 +90,35 @@ namespace Assets.Scripts.CubeView
             {
                 edge.transform.SetParent(_edgesParent);
             }
-        }
 
-        private void Move(string move)
-        {
-            RestoreParents();
-
-            Transform rotator;
-            Vector3 axis;
-            switch (move)
-            {
-                case "U":
-                    rotator = _centers[0];
-                    axis = Vector3.up;
-                    break;
-                case "U'":
-                    rotator = _centers[0];
-                    axis = Vector3.down;
-                    break;
-                case "R":
-                    rotator = _centers[1];
-                    axis = Vector3.forward;
-                    break;
-                case "R'":
-                    rotator = _centers[1];
-                    axis = Vector3.back;
-                    break;
-                case "F":
-                    rotator = _centers[2];
-                    axis = Vector3.right;
-                    break;
-                case "F'":
-                    rotator = _centers[2];
-                    axis = Vector3.left;
-                    break;
-                case "L":
-                    rotator = _centers[3];
-                    axis = Vector3.back;
-                    break;
-                case "L'":
-                    rotator = _centers[3];
-                    axis = Vector3.forward;
-                    break;
-                case "B":
-                    rotator = _centers[4];
-                    axis = Vector3.left;
-                    break;
-                case "B'":
-                    rotator = _centers[4];
-                    axis = Vector3.right;
-                    break;
-                case "D":
-                    rotator = _centers[5];
-                    axis = Vector3.down;
-                    break;
-                case "D'":
-                    rotator = _centers[5];
-                    axis = Vector3.up;
-                    break;
-                default:
-                    return;
-            }
+            Transform rotator = _centers[_rotatorsMap[move]];
 
             Collider[] cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
             foreach (var cubie in cubies)
             {
-                cubie.transform.SetParent(rotator);
-            }
-            StartCoroutine(Rotate(rotator, axis));
-        }
-
-        private void Move(byte faceletId, Vector2 direction)
-        {
-            RestoreParents();
-
-            string mv = SwipeConverter.GetMove(faceletId, direction);
-            Debug.Log(mv);
-            Transform rotator;
-            Collider[] cubies;
-            Vector3 axis;
-            switch (mv)
-            {
-                case "U":
-                    rotator = _centers[0];
-                    axis = Vector3.up;
-                    break;
-                case "U'":
-                    rotator = _centers[0];
-                    axis = Vector3.down;
-                    break;
-                case "R":
-                    rotator = _centers[1];
-                    axis = Vector3.forward;
-                    break;
-                case "R'":
-                    rotator = _centers[1];
-                    axis = Vector3.back;
-                    break;
-                case "F":
-                    rotator = _centers[2];
-                    axis = Vector3.right;
-                    break;
-                case "F'":
-                    rotator = _centers[2];
-                    axis = Vector3.left;
-                    break;
-                case "L":
-                    rotator = _centers[3];
-                    axis = Vector3.back;
-                    break;
-                case "L'":
-                    rotator = _centers[3];
-                    axis = Vector3.forward;
-                    break;
-                case "B":
-                    rotator = _centers[4];
-                    axis = Vector3.left;
-                    break;
-                case "B'":
-                    rotator = _centers[4];
-                    axis = Vector3.right;
-                    break;
-                case "D":
-                    rotator = _centers[5];
-                    axis = Vector3.down;
-                    break;
-                case "D'":
-                    rotator = _centers[5];
-                    axis = Vector3.up;
-                    break;
-                default:
-                    return;
+                cubie.transform.SetParent(rotator);                
             }
 
-            cubies = Physics.OverlapSphere(rotator.position, _debugRadius, LayerMask.GetMask("Cubie"));
-            foreach (var cubie in cubies)
-            {
-                cubie.transform.SetParent(rotator);
-            }
-            StartCoroutine(Rotate(rotator, axis));
-        }
+            Vector3 axis = _axisMap[move];
 
-        private IEnumerator Rotate(Transform transform, Vector3 axis)
-        {
             float curAngle = 0;
             while (curAngle < 90f)
             {
-                transform.RotateAround(transform.position, axis, _rotateSpeed);
+                rotator.RotateAround(rotator.position, axis, _rotateSpeed);
                 curAngle += _rotateSpeed;
                 yield return new WaitForEndOfFrame();                
             }
+
+            _rdyToNextRotate = true;
         }
 
-        // Update is called once per frame
-        void Update()
+        private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.KeypadEnter))
-            {                
-                Debug.Log("Facelet26 rotation: " + _facelets[26].transform.rotation.eulerAngles);
+            if (_rdyToNextRotate && _movesQ.Count > 0)
+            {
+                StartCoroutine(Rotate(_movesQ.Dequeue()));
+                _rdyToNextRotate = false;
             }
-        }
-
-        private void Click(byte faceletId)
-        {
-            Debug.Log("Click on facelet" + faceletId);
         }
 
         private int _sideLabelFontSize = 40;
