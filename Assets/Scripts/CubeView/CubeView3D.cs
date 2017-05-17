@@ -107,21 +107,41 @@ namespace Assets.Scripts.CubeView
             _cmdQ.Enqueue(cmd);
         }
 
-        private IEnumerator Turn(string cmd)
+        private IEnumerator Turn(string comb)
         {
-            Transform rotator = GetRotatorByCmd(cmd);
-            Vector3 axis = cmd.Length == 1 ? rotator.transform.forward : -rotator.transform.forward; // проверка на штрих вторым символом
+            string[] cmd = comb.Split(' ');
 
-            Collider[] cubies = Physics.OverlapSphere(rotator.position, _overlapRadius, LayerMask.GetMask("Cubie"));
-            foreach (var cubie in cubies)
+            List<Transform> rotators = new List<Transform>();
+            List<Vector3> axis = new List<Vector3>();
+
+            for (int i = 0; i < cmd.Length; i++)
             {
-                cubie.transform.SetParent(rotator);
+                Transform rotator = GetRotatorByCmd(cmd[i]);
+                rotators.Add(rotator);
+                axis.Add(cmd[i].Length == 1 ? rotator.transform.forward : -rotator.transform.forward);
+
+                Collider[] cubies = Physics.OverlapSphere(rotator.position, _overlapRadius, LayerMask.GetMask("Cubie"));
+                foreach (var cubie in cubies)
+                {
+                    cubie.transform.SetParent(rotator);
+                }
+            }
+
+            if (cmd.Length > 1)
+            {
+                rotators.Add(transform);
+                //axis.Add(transform.localToWorldMatrix.MultiplyVector(cmd[0].Length == 1 ? -rotators[0].forward : rotators[0].forward));
+                axis.Add(-axis[0]);
             }
 
             float curAngle = 0;
             while (curAngle < 90f)
             {
-                rotator.RotateAround(rotator.position, axis, _rotationSpeed);
+                for (int i = 0; i < rotators.Count; i++)
+                {
+                    rotators[i].RotateAround(rotators[i].position, axis[i], _rotationSpeed);
+                }
+
                 curAngle += _rotationSpeed;
                 yield return new WaitForEndOfFrame();
             }

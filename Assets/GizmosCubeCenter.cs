@@ -20,7 +20,7 @@ public class GizmosCubeCenter : MonoBehaviour
     [SerializeField]
     private int _labelFontSize;
     [SerializeField]
-    private Vector3 _labelOffset;
+    private float _labelOffset;
 
     [SerializeField]
     private bool _showLocalCoordinates = true;
@@ -38,7 +38,7 @@ public class GizmosCubeCenter : MonoBehaviour
 
         if (_showLabel)
         {
-            GizmosUtils.DrawText(GUI.skin, _label, transform.position + _labelOffset, _labelColor, _labelFontSize);
+            GizmosUtils.DrawText(GUI.skin, _label, transform.position + transform.forward * _labelOffset, _labelColor, _labelFontSize);
         }
 
         if (_showLocalCoordinates)
