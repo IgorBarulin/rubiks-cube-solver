@@ -8,6 +8,7 @@ namespace Assets.Scripts.CubeView
 {
     public class CubeView3D : MonoBehaviour
     {
+        [Range(1f, 90f)]
         [SerializeField]
         private float _rotationSpeed;
         [SerializeField]
@@ -107,18 +108,19 @@ namespace Assets.Scripts.CubeView
             _cmdQ.Enqueue(cmd);
         }
 
-        private IEnumerator Turn(string comb)
+        private IEnumerator Turn(string combination)
         {
-            string[] cmd = comb.Split(' ');
+            string[] commands = combination.Split(' ');
 
             List<Transform> rotators = new List<Transform>();
             List<Vector3> axis = new List<Vector3>();
 
-            for (int i = 0; i < cmd.Length; i++)
+            for (int i = 0; i < commands.Length; i++)
             {
-                Transform rotator = GetRotatorByCmd(cmd[i]);
+                Transform rotator = GetRotatorByCmd(commands[i]);
                 rotators.Add(rotator);
-                axis.Add(cmd[i].Length == 1 ? rotator.transform.forward : -rotator.transform.forward);
+                bool isPositivCommand = commands[i].Length == 1;
+                axis.Add(isPositivCommand ? rotator.transform.forward : -rotator.transform.forward);
 
                 Collider[] cubies = Physics.OverlapSphere(rotator.position, _overlapRadius, LayerMask.GetMask("Cubie"));
                 foreach (var cubie in cubies)
@@ -127,11 +129,11 @@ namespace Assets.Scripts.CubeView
                 }
             }
 
-            if (cmd.Length > 1)
+            bool isMultipleCombination = commands.Length > 1;
+            if (isMultipleCombination)
             {
-                rotators.Add(transform);
-                //axis.Add(transform.localToWorldMatrix.MultiplyVector(cmd[0].Length == 1 ? -rotators[0].forward : rotators[0].forward));
-                axis.Add(-axis[0]);
+                rotators.Add(this.transform);
+                axis.Add(-axis.First());
             }
 
             float curAngle = 0;
@@ -144,6 +146,15 @@ namespace Assets.Scripts.CubeView
 
                 curAngle += _rotationSpeed;
                 yield return new WaitForEndOfFrame();
+
+                for (int i = 0; i < rotators.Count; i++)
+                {
+                    Vector3 euler = rotators[i].rotation.eulerAngles;
+                    euler.x = Mathf.Round(euler.x);
+                    euler.y = Mathf.Round(euler.y);
+                    euler.z = Mathf.Round(euler.z);
+                    rotators[i].rotation = Quaternion.Euler(euler);
+                }    
             }
 
             RestoreCubieParents();
