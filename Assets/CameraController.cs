@@ -7,62 +7,119 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private Transform _target;
     [SerializeField]
-    private float _speed;
+    private float _moveSpeed;
     [SerializeField]
-    private float _radius;
-    [SerializeField]
-    private Transform _y;
-    [SerializeField]
-    private Transform _x;
+    private Vector3 _bounds;
 
-    private float _savRad = 0;
+    private GameObject _testObj;
+
+    private Vector3[] _top = new Vector3[]
+    {
+        new Vector3(1, 1, 1),
+        new Vector3(1, 1, -1),
+        new Vector3(-1, 1, -1),
+        new Vector3(-1, 1, 1)
+    };
+
+    private Vector3[] _bottom = new Vector3[]
+    {
+        new Vector3(1, -1, 1),
+        new Vector3(1, -1, -1),
+        new Vector3(-1, -1, -1),
+        new Vector3(-1, -1, 1)
+    };
+
+    private bool _onBottomNow;
+
+    private int _current;
+
+    private bool _nowMoving;
+
+    private void Start()
+    {
+        Move();
+    }
 
     private void Update()
     {
-        if (_radius != _savRad)
+        if (!_nowMoving)
         {
-            transform.position = new Vector3(0f, 0f, _radius);
-            _savRad = _radius;
+            if (Input.GetMouseButton(1))
+            {
+                float horizontal = Input.GetAxis("Mouse X");
+                float vertical = Input.GetAxis("Mouse Y");
 
-            transform.LookAt(_target.position);
+                float absHorizontal = Mathf.Abs(horizontal);
+                float absVertical = Mathf.Abs(vertical);
+
+                if (absHorizontal > absVertical)
+                {
+                    if (horizontal > 0)
+                    {
+                        _current--;
+                        if (_current < 0)
+                        {
+                            _current = 3;
+                        }
+                        Move();
+                    }
+                    else if (horizontal < 0)
+                    {
+                        _current++;
+                        if (_current > 3)
+                        {
+                            _current = 0;
+                        }
+                        Move();
+                    }
+                }
+                else if (absVertical > absHorizontal)
+                {
+                    if (vertical > 0)
+                    {
+                        if (_onBottomNow)
+                        {
+                            _onBottomNow = false;
+                            Move();
+                        }
+                    }
+                    else if (vertical < 0)
+                    {
+                        if (!_onBottomNow)
+                        {
+                            _onBottomNow = true;
+                            Move();
+                        }
+                    }
+                }
+            }
         }
+    }
 
+    private void Move()
+    {
+        Vector3 pos = _onBottomNow ? _bottom[_current] : _top[_current];
+        pos.x *= _bounds.x / 2;
+        pos.y *= _bounds.y / 2;
+        pos.z *= _bounds.z / 2;
 
+        StartCoroutine(MoveProcess(pos));
+        _nowMoving = true;
+    }
 
-        float horizontal = Input.GetAxis("Mouse X");
-        float vertical = Input.GetAxis("Mouse Y");
-
-        if (Input.GetKey(KeyCode.Space))
+    private IEnumerator MoveProcess(Vector3 to)
+    {
+        while (transform.position != to)
         {
-            if (Input.GetMouseButton(0) && horizontal != 0)
-            {
-                _x.RotateAround(_target.position, Vector3.up, _speed * horizontal * Time.deltaTime);
-            }
-            if (Input.GetMouseButton(0) && vertical != 0)
-            {
-                _y.RotateAround(_target.position, Vector3.right, _speed * vertical * Time.deltaTime);
-            }
-
-            _x.transform.LookAt(_target.position);
-            _y.transform.LookAt(_target.position);
-            transform.LookAt(_target.position);
+            transform.position = Vector3.MoveTowards(transform.position, to, _moveSpeed);
+            transform.LookAt(_target);
+            yield return new WaitForEndOfFrame();
         }
-
-        //float horizontal = Input.GetAxis("Horizontal");
-        //float vertical = Input.GetAxis("Vertical");
-
-        //if (horizontal != 0)
-        //{
-        //    _x.RotateAround(_target.position, Vector3.up, _speed * horizontal * Time.deltaTime);
-        //}
-        //if (vertical != 0)
-        //{
-        //    _y.RotateAround(_target.position, Vector3.right, _speed * vertical * Time.deltaTime);
-        //}
+        _nowMoving = false;
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(_target.transform.position, _radius);
+        Gizmos.DrawWireCube(_target.position, _bounds);
     }
 }
