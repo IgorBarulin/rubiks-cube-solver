@@ -17,8 +17,7 @@ namespace Assets.Scripts.CubeConstruct
         private Facelet2D[] _facelets2D;
         [SerializeField]
         private Palette _palette;
-        [SerializeField]
-        private Button _applyButton;
+        
 
         protected override void Awake()
         {
@@ -70,5 +69,7 @@ namespace Assets.Scripts.CubeConstruct
         {
             _facelets2D[id].SetColor(_palette.SelectedId, _palette.SelectedColor);
         }
+
+        
     }
 }
