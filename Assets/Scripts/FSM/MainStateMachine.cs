@@ -7,22 +7,10 @@ namespace Assets.Scripts.FSM
 {
     public class MainStateMachine : MonoBehaviour
     {
-        private MainState _state;
-        public MainState State
-        {
-            get { return _state; }
-            set
-            {
-                if (_state != null)
-                    _state.Finish();
-                _state = value;
-                _state.Start();
-            }
-        }
+        public State State;
 
-        private void Awake()
+        private void Start()
         {
-            State = new PlayState(this);
         }
     }
 }

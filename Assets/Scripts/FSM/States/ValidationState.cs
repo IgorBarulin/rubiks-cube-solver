@@ -19,7 +19,6 @@ namespace Assets.Scripts.FSM.States
 
         protected override IEnumerator StartCoroutine()
         {
-            _mainStateMachine.State = new PlayState(_mainStateMachine, _facelets);
             yield return null;
         }
 

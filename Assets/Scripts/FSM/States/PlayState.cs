@@ -59,7 +59,6 @@ namespace Assets.Scripts.FSM.States
 
         private void TransitToConstructor()
         {
-            _mainStateMachine.State = new ConstructorState(_mainStateMachine, _cubeView2D.GetFacelets());
         }
     }
 }

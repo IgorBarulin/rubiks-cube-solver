@@ -59,7 +59,6 @@ namespace Assets.Scripts.FSM.States
 
         private void TransitToValidation()
         {
-            _mainStateMachine.State = new ValidationState(_mainStateMachine, _constructor2D.GetFacelets());
         }
     }
 }

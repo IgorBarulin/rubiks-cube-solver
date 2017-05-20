@@ -2,106 +2,94 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CameraCommand
+{
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+}
+
 public class CameraController : MonoBehaviour
 {
     [SerializeField]
-    private Transform _target;
+    private Transform _cube3d;
     [SerializeField]
     private float _moveSpeed;
     [SerializeField]
     private Vector3 _bounds;
 
-    private GameObject _testObj;
-
     private Vector3[] _top = new Vector3[]
     {
-        new Vector3(1, 1, 1),
-        new Vector3(1, 1, -1),
-        new Vector3(-1, 1, -1),
-        new Vector3(-1, 1, 1)
+        new Vector3( 1,  1,  1),
+        new Vector3( 1,  1, -1),
+        new Vector3(-1,  1, -1),
+        new Vector3(-1,  1,  1)
     };
 
     private Vector3[] _bottom = new Vector3[]
     {
-        new Vector3(1, -1, 1),
-        new Vector3(1, -1, -1),
+        new Vector3( 1, -1,  1),
+        new Vector3( 1, -1, -1),
         new Vector3(-1, -1, -1),
-        new Vector3(-1, -1, 1)
+        new Vector3(-1, -1,  1)
     };
-
-    private bool _onBottomNow;
 
     private int _current;
 
+    private bool _onBottomNow;
     private bool _nowMoving;
 
-    private void Start()
+
+    public void Initialize()
     {
-        Move();
+        MoveTo(AdaptToBounds(_top[_current]));
+    }
+
+    private Queue<CameraCommand> _cmdQ = new Queue<CameraCommand>();
+
+    public void AddMoveCommand(CameraCommand command)
+    {
+        _cmdQ.Enqueue(command);
+    }
+
+    public void ClearAllCommands()
+    {
+        _cmdQ.Clear();
+        _nowMoving = false;
     }
 
     private void Update()
     {
-        if (!_nowMoving)
+        if (!_nowMoving && _cmdQ.Count > 0)
         {
-            if (Input.GetMouseButton(1))
+            switch (_cmdQ.Dequeue())
             {
-                float horizontal = Input.GetAxis("Mouse X");
-                float vertical = Input.GetAxis("Mouse Y");
-
-                float absHorizontal = Mathf.Abs(horizontal);
-                float absVertical = Mathf.Abs(vertical);
-
-                if (absHorizontal > absVertical)
-                {
-                    if (horizontal > 0)
-                    {
-                        _current--;
-                        if (_current < 0)
-                        {
-                            _current = 3;
-                        }
-                        Move();
-                    }
-                    else if (horizontal < 0)
-                    {
-                        _current++;
-                        if (_current > 3)
-                        {
-                            _current = 0;
-                        }
-                        Move();
-                    }
-                }
-                else if (absVertical > absHorizontal)
-                {
-                    if (vertical > 0)
-                    {
-                        if (_onBottomNow)
-                        {
-                            _onBottomNow = false;
-                            Move();
-                        }
-                    }
-                    else if (vertical < 0)
-                    {
-                        if (!_onBottomNow)
-                        {
-                            _onBottomNow = true;
-                            Move();
-                        }
-                    }
-                }
+                case CameraCommand.LEFT:
+                    _current = --_current < 0 ? 3 : _current;
+                    MoveTo(AdaptToBounds(_onBottomNow ? _bottom[_current] : _top[_current]));
+                    break;
+                case CameraCommand.RIGHT:
+                    _current = ++_current > 3 ? 0 : _current;
+                    MoveTo(AdaptToBounds(_onBottomNow ? _bottom[_current] : _top[_current]));
+                    break;
+                case CameraCommand.UP:
+                    if (!_onBottomNow) return;
+                    _onBottomNow = false;
+                    MoveTo(AdaptToBounds(_top[_current]));
+                    break;
+                case CameraCommand.DOWN:
+                    if (_onBottomNow) return;
+                    _onBottomNow = true;
+                    MoveTo(AdaptToBounds(_bottom[_current]));
+                    break;
             }
         }
     }
 
-    private void Move()
+    private void MoveTo(Vector3 pos)
     {
-        Vector3 pos = _onBottomNow ? _bottom[_current] : _top[_current];
-        pos.x *= _bounds.x / 2;
-        pos.y *= _bounds.y / 2;
-        pos.z *= _bounds.z / 2;
+        if (transform.position == pos) return;
 
         StartCoroutine(MoveProcess(pos));
         _nowMoving = true;
@@ -112,14 +100,22 @@ public class CameraController : MonoBehaviour
         while (transform.position != to)
         {
             transform.position = Vector3.MoveTowards(transform.position, to, _moveSpeed);
-            transform.LookAt(_target);
+            transform.LookAt(_cube3d);
             yield return new WaitForEndOfFrame();
         }
         _nowMoving = false;
     }
 
+    private Vector3 AdaptToBounds(Vector3 pos)
+    {
+        pos.x *= _bounds.x / 2;
+        pos.y *= _bounds.y / 2;
+        pos.z *= _bounds.z / 2;
+        return pos;
+    }
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(_target.position, _bounds);
+        Gizmos.DrawWireCube(_cube3d.position, _bounds);
     }
 }

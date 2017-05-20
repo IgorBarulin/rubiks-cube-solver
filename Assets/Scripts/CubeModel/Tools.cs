@@ -78,5 +78,10 @@ namespace Assets.Scripts.CubeModel
             }
             return s;
         }
+
+        public static Vector2 ToVector2(this Vector3 me)
+        {
+            return new Vector2(me.x, me.y);
+        }
     }
 }
