@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.CubeModel;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,21 +10,14 @@ public class InitState : State
 
     private void OnEnable()
     {
-
+        _stateMachine.State = _playState;
+        _playState.gameObject.SetActive(true);
+        (_playState as PlayState1).Initialize(new CubeFactory().CreateCube(null));
+        gameObject.SetActive(false);
     }
 
     private void OnDisable()
     {
 
     }
-
-    private void Update ()
-    {
-		if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _stateMachine.State = _playState;
-            _playState.gameObject.SetActive(true);
-            gameObject.SetActive(false);
-        }
-	}
 }

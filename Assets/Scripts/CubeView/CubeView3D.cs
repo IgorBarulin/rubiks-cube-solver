@@ -8,7 +8,7 @@ namespace Assets.Scripts.CubeView
 {
     public class CubeView3D : MonoBehaviour
     {
-        [Range(1f, 90f)]
+        [Range(1f, 5f)]
         [SerializeField]
         private float _rotationSpeed;
         [SerializeField]
@@ -31,6 +31,23 @@ namespace Assets.Scripts.CubeView
         private Queue<string> _cmdQ = new Queue<string>();
 
         private bool _rdyToNextTurn = true;
+
+        private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
+        public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
+
+
+        public void SetConfiguration(byte[] facelets)
+        {
+            for (int i = 0; i < 48; i++)
+            {
+                _facelets[i].material.color = _colorSheme.GetColor(facelets[i]);
+            }
+        }
+
+        public void AddCommandInQueue(string cmd)
+        {
+            _cmdQ.Enqueue(cmd);
+        }
 
         private void Awake()
         {
@@ -82,11 +99,6 @@ namespace Assets.Scripts.CubeView
                     _colorSheme.GetColor(i);
             }
 
-            for (int i = 0; i < 48; i++)
-            {
-                _facelets[i].material.color = _colorSheme.GetColor(i / 8);
-            }
-
             FaceletHandler[] faceletHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
             foreach (var faceletHandler in faceletHandlers)
             {
@@ -98,14 +110,11 @@ namespace Assets.Scripts.CubeView
         {
             if (_rdyToNextTurn && _cmdQ.Count > 0)
             {
-                StartCoroutine(Turn(_cmdQ.Dequeue()));
+                string command = _cmdQ.Dequeue();
+                StartCoroutine(Turn(command));
+                _onFaceletDrag.Invoke(command);
                 _rdyToNextTurn = false;
             }
-        }
-
-        public void AddCommandInQueue(string cmd)
-        {
-            _cmdQ.Enqueue(cmd);
         }
 
         private IEnumerator Turn(string combination)

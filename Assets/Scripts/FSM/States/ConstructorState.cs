@@ -36,7 +36,7 @@ namespace Assets.Scripts.FSM.States
             GameObject constructor2DPrefab = Prefabs.Instance.Dictionary["Constructor2D"];
             _constructor2D = PoolManager.SpawnObject(constructor2DPrefab).GetComponent<Constructor2D>();
             _constructor2D.transform.SetParent(canvas, false);
-            _constructor2D.Initialize(_palette, _initialFacelets);
+            _constructor2D.Initialize(_initialFacelets);
             yield return null;
 
             GameObject button = Prefabs.Instance.Dictionary["Button"];

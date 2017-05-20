@@ -15,16 +15,26 @@ namespace Assets.Scripts.CubeConstruct
         private Image[] _centers;
         [SerializeField]
         private Facelet2D[] _facelets2D;
-
+        [SerializeField]
         private Palette _palette;
+        [SerializeField]
+        private Button _applyButton;
 
-        public void Initialize(Palette palette, byte[] initialFacelets)
+        protected override void Awake()
         {
-            _palette = palette;
+            base.Awake();
 
-            for (byte cent = 0; cent < _centers.Length; cent++)
+            for (int i = 0; i < _facelets2D.Length; i++)
             {
-                _centers[cent].color = _palette.PaletteColors.Colors[cent];
+                _facelets2D[i].OnClick.AddListener(SetFaceletColor);
+            }
+        }
+
+        public void Initialize(byte[] initialFacelets)
+        {
+            for (byte i = 0; i < _centers.Length; i++)
+            {
+                _centers[i].color = _palette.ColorSheme.GetColor(i);
             }
 
             if (initialFacelets == null)
@@ -32,7 +42,6 @@ namespace Assets.Scripts.CubeConstruct
                 for (byte i = 0; i < _facelets2D.Length; i++)
                 {
                     _facelets2D[i].Initialize(i);
-                    _facelets2D[i].OnClick.AddListener(SetFaceletColor);
                 }
             }
             else
@@ -40,8 +49,7 @@ namespace Assets.Scripts.CubeConstruct
                 for (byte i = 0; i < initialFacelets.Length; i++)
                 {
                     _facelets2D[i].Initialize(i);
-                    _facelets2D[i].SetColor(initialFacelets[i], _palette.PaletteColors.Colors[initialFacelets[i]]);
-                    _facelets2D[i].OnClick.AddListener(SetFaceletColor);
+                    _facelets2D[i].SetColor(initialFacelets[i], _palette.ColorSheme.GetColor(initialFacelets[i]));
                 }
             }
         }
