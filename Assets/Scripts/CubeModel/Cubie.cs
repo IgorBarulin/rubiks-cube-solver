@@ -14,5 +14,10 @@ namespace Assets.Scripts.CubeModel
             Position = pos;
             Orient = orient;
         }
+
+        public bool isSame(Cubie cubie)
+        {
+            return Position == cubie.Position && Orient == cubie.Orient;
+        }
     }
 }

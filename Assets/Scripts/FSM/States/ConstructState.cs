@@ -10,7 +10,7 @@ public class ConstructState : State
     [SerializeField]
     private Constructor2D _constructor2d;
     [SerializeField]
-    private State _playState;
+    private State _validationState;
     [SerializeField]
     private Button _applyButton;
 
@@ -23,7 +23,7 @@ public class ConstructState : State
     private void OnEnable()
     {
         _applyButton.gameObject.SetActive(true);
-        _applyButton.onClick.AddListener(TransitToPlayState);
+        _applyButton.onClick.AddListener(TransitToValidationState);
     }
 
     private void OnDisable()
@@ -32,15 +32,14 @@ public class ConstructState : State
             _constructor2d.gameObject.SetActive(false);
 
         _applyButton.gameObject.SetActive(false);
-        _applyButton.onClick.RemoveListener(TransitToPlayState);
+        _applyButton.onClick.RemoveListener(TransitToValidationState);
     }
 
-    private void TransitToPlayState()
+    private void TransitToValidationState()
     {
-        _stateMachine.State = _playState;
-        _playState.gameObject.SetActive(true);
-        Cube cube = new CubeFactory().CreateCube(_constructor2d.GetFacelets());
-        (_playState as PlayState).Initialize(cube);
+        _stateMachine.State = _validationState;
+        _validationState.gameObject.SetActive(true);
+        (_validationState as ValidationState).Initialize(_constructor2d.GetFacelets());
         gameObject.SetActive(false);
     }
 }

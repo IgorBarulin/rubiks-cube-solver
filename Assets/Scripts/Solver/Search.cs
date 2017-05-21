@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts.Solver
@@ -28,7 +29,7 @@ namespace Assets.Scripts.Solver
         static byte[] minDistPhase1 = new byte[31];
         static byte[] minDistPhase2 = new byte[31];
 
-        static byte[] axPoToMove(int length)
+        static string axPoToMove(int length)
         {
             byte[] vals = new byte[length];
             for (byte i = 0; i < length; i++)
@@ -36,10 +37,23 @@ namespace Assets.Scripts.Solver
                 vals[i] = (byte)(ax[i] * 3 + po[i] - 1);
             }
 
-            return vals;
+            return ToMoves(vals);
         }
 
-        public static byte[] fullSolve(Cube cube, int maxDepth, int timeoutMS = 6000)
+        private static string ToMoves(byte[] moveIds)
+        {
+            string[] movesMap = "U U2 U' R R2 R' F F2 F' D D2 D' L L2 L' B B2 B'".Split(' ');
+            StringBuilder combination = new StringBuilder();
+            for (int i = 0; i < moveIds.Length; i++)
+            {
+                combination.Append(movesMap[moveIds[i]]);
+                if (i < moveIds.Length - 1)
+                    combination.Append(" ");
+            }
+            return combination.ToString();
+    }
+
+        public static string fullSolve(Cube cube, int maxDepth, int timeoutMS = 6000)
         {
             if (cube.IsSolved)
             {

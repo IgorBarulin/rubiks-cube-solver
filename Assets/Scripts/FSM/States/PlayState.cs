@@ -4,6 +4,7 @@ using UnityEngine;
 using Assets.Scripts.CubeModel;
 using Assets.Scripts.CubeView;
 using UnityEngine.UI;
+using Assets.Scripts.Solver;
 
 public class PlayState : State
 {
@@ -13,6 +14,8 @@ public class PlayState : State
     private CubeView3D _cube3D;
     [SerializeField]
     private Button _constructButton;
+    [SerializeField]
+    private Button _solveButton;
     [SerializeField]
     private State _constructState;
 
@@ -30,9 +33,14 @@ public class PlayState : State
     private void OnEnable()
     {
         _cameraController.Initialize();
+
         _cube3D.gameObject.SetActive(true);
+
         _constructButton.gameObject.SetActive(true);
         _constructButton.onClick.AddListener(TransitToConstructState);
+
+        _solveButton.gameObject.SetActive(true);
+        _solveButton.onClick.AddListener(Solve);
     }
 
     private void OnDisable()
@@ -53,6 +61,12 @@ public class PlayState : State
             _constructButton.gameObject.SetActive(false);
             _constructButton.onClick.RemoveListener(TransitToConstructState);
         }
+
+        if (_solveButton)
+        {
+            _solveButton.gameObject.SetActive(false);
+            _solveButton.onClick.RemoveListener(Solve);
+        }
     }
 
     private void TransitToConstructState()
@@ -61,6 +75,45 @@ public class PlayState : State
         _constructState.gameObject.SetActive(true);
         (_constructState as ConstructState).Initialize(_cube.GetFaceletColors());
         gameObject.SetActive(false);
+    }
+
+    private void Solve()
+    {
+        string solveCombo = Search.fullSolve(_cube, 20, 10000);
+        foreach (var cmd in solveCombo.Split(' '))
+        {
+            switch (cmd)
+            {
+                case "U2":
+                    _cube3D.AddCommandInQueue("U");
+                    _cube3D.AddCommandInQueue("U");
+                    break;
+                case "R2":
+                    _cube3D.AddCommandInQueue("R");
+                    _cube3D.AddCommandInQueue("R");
+                    break;
+                case "F2":
+                    _cube3D.AddCommandInQueue("F");
+                    _cube3D.AddCommandInQueue("F");
+                    break;
+                case "L2":
+                    _cube3D.AddCommandInQueue("L");
+                    _cube3D.AddCommandInQueue("L");
+                    break;
+                case "B2":
+                    _cube3D.AddCommandInQueue("B");
+                    _cube3D.AddCommandInQueue("B");
+                    break;
+                case "D2":
+                    _cube3D.AddCommandInQueue("D");
+                    _cube3D.AddCommandInQueue("D");
+                    break;
+                default:
+                    _cube3D.AddCommandInQueue(cmd);
+                    break;
+            }
+        }
+        Debug.Log(solveCombo);
     }
 
     private void Update()
