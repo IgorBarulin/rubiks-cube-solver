@@ -40,7 +40,7 @@ public class ConstructState : State
         _stateMachine.State = _playState;
         _playState.gameObject.SetActive(true);
         Cube cube = new CubeFactory().CreateCube(_constructor2d.GetFacelets());
-        (_playState as PlayState1).Initialize(cube);
+        (_playState as PlayState).Initialize(cube);
         gameObject.SetActive(false);
     }
 }

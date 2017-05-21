@@ -12,7 +12,7 @@ public class InitState : State
     {
         _stateMachine.State = _playState;
         _playState.gameObject.SetActive(true);
-        (_playState as PlayState1).Initialize(new CubeFactory().CreateCube(null));
+        (_playState as PlayState).Initialize(new CubeFactory().CreateCube(null));
         gameObject.SetActive(false);
     }
 

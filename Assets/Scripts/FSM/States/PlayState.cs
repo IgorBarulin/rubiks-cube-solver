@@ -1,64 +1,111 @@
-﻿using Assets.Scripts;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts.Tools;
+using Assets.Scripts.CubeModel;
 using Assets.Scripts.CubeView;
-using Assets.Scripts.CubeConstruct;
-using System;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.FSM.States
+public class PlayState : State
 {
-    public class PlayState : MainState
+    [SerializeField]
+    private CameraController _cameraController;
+    [SerializeField]
+    private CubeView3D _cube3D;
+    [SerializeField]
+    private Button _constructButton;
+    [SerializeField]
+    private State _constructState;
+
+    private Cube _cube;
+    private Vector2 _startDragPosition;
+
+
+    public void Initialize(Cube cube)
     {
-        private CubeView2D _cubeView2D;
+        _cube = cube;
+        _cube3D.SetConfiguration(_cube.GetFaceletColors());
+        _cube3D.OnFaceletDrag.AddListener(_cube.Move);
+    }
 
-        private Button _button;
+    private void OnEnable()
+    {
+        _cameraController.Initialize();
+        _cube3D.gameObject.SetActive(true);
+        _constructButton.gameObject.SetActive(true);
+        _constructButton.onClick.AddListener(TransitToConstructState);
+    }
 
-        private byte[] _facelets;
-
-        public PlayState(MainStateMachine mainStateMachine, byte[] facelets = null) : base(mainStateMachine)
+    private void OnDisable()
+    {
+        if (_cameraController)
         {
-            _facelets = facelets;
-
-            Debug.Log("MainStateMachine: PlayState");
+            _cameraController.ClearAllCommands();
+        }
+        
+        if (_cube3D)
+        {
+            _cube3D.gameObject.SetActive(false);
+            _cube3D.OnFaceletDrag.RemoveListener(_cube.Move);
         }
 
-        protected override IEnumerator StartCoroutine()
+        if (_constructButton)
         {
-            Transform canvas = Prefabs.Instance.Canvas.transform;
-            yield return null;
-
-            PaletteColors paletteColors = Resources.Load<PaletteColors>("DefaultColors");
-            if (paletteColors == null)
-                throw new Exception("PaletteColors not found at DefaultColors");
-            yield return null;
-
-            GameObject cubeView2DPrefab = Prefabs.Instance.Dictionary["CubeView2D"];
-            _cubeView2D = PoolManager.SpawnObject(cubeView2DPrefab).GetComponent<CubeView2D>();
-            _cubeView2D.transform.SetParent(canvas, false);
-            _cubeView2D.Initialize(paletteColors.Colors, _facelets);
-            yield return null;
-
-            GameObject button = Prefabs.Instance.Dictionary["Button"];
-            _button = PoolManager.SpawnObject(button).GetComponent<Button>();
-            _button.transform.SetParent(canvas, false);
-            _button.GetComponentInChildren<Text>().text = "Constructor";
-            _button.onClick.AddListener(TransitToConstructor);
-            yield return null;
+            _constructButton.gameObject.SetActive(false);
+            _constructButton.onClick.RemoveListener(TransitToConstructState);
         }
+    }
 
-        protected override IEnumerator FinishCoroutine()
+    private void TransitToConstructState()
+    {
+        _stateMachine.State = _constructState;
+        _constructState.gameObject.SetActive(true);
+        (_constructState as ConstructState).Initialize(_cube.GetFaceletColors());
+        gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        HandleCameraMoving();
+    }
+
+    private void HandleCameraMoving()
+    {
+        if (Input.GetMouseButtonDown(1))
         {
-            PoolManager.ReleaseObject(_cubeView2D.gameObject);
-            _button.onClick.RemoveAllListeners();
-            PoolManager.ReleaseObject(_button.gameObject);
-            yield return null;
+            _startDragPosition = Input.mousePosition;
         }
-
-        private void TransitToConstructor()
+        else if (Input.GetMouseButtonUp(1))
         {
+            Vector2 direction = Input.mousePosition.ToVector2() - _startDragPosition;
+
+            float horizontal = direction.x;
+            float vertical = direction.y;
+
+            float absHorizontal = Mathf.Abs(horizontal);
+            float absVertical = Mathf.Abs(vertical);
+
+            if (absHorizontal > absVertical)
+            {
+                if (horizontal > 0)
+                {
+                    _cameraController.AddMoveCommand(CameraCommand.LEFT);
+                }
+                else if (horizontal < 0)
+                {
+                    _cameraController.AddMoveCommand(CameraCommand.RIGHT);
+                }
+            }
+            else if (absVertical > absHorizontal)
+            {
+                if (vertical > 0)
+                {
+                    _cameraController.AddMoveCommand(CameraCommand.UP);
+                }
+                else if (vertical < 0)
+                {
+                    _cameraController.AddMoveCommand(CameraCommand.DOWN);
+                }
+            }
         }
     }
 }
