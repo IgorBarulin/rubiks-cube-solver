@@ -18,20 +18,21 @@ public class PlayState : State
     private Button _solveButton;
     [SerializeField]
     private State _constructState;
+    [SerializeField]
+    private State _shuffleState;
+    [SerializeField]
+    private Button _shuffleButton;
 
-    private Cube _cube;
     private Vector2 _startDragPosition;
 
 
-    public void Initialize(Cube cube)
+    public override void Enter(Cube cube)
     {
-        _cube = cube;
+        base.Enter(cube);
+
         _cube3D.SetConfiguration(_cube.GetFaceletColors());
         _cube3D.OnFaceletDrag.AddListener(_cube.Move);
-    }
 
-    private void OnEnable()
-    {
         _cameraController.Initialize();
 
         _cube3D.gameObject.SetActive(true);
@@ -41,18 +42,23 @@ public class PlayState : State
 
         _solveButton.gameObject.SetActive(true);
         _solveButton.onClick.AddListener(Solve);
+
+        _shuffleButton.gameObject.SetActive(true);
+        _shuffleButton.onClick.AddListener(TransitToShuffleState);
     }
 
-    private void OnDisable()
+    public override void Exit()
     {
+        base.Exit();
+
         if (_cameraController)
         {
             _cameraController.ClearAllCommands();
         }
-        
+
         if (_cube3D)
         {
-            _cube3D.gameObject.SetActive(false);
+            //_cube3D.gameObject.SetActive(false);
             _cube3D.OnFaceletDrag.RemoveListener(_cube.Move);
         }
 
@@ -67,14 +73,22 @@ public class PlayState : State
             _solveButton.gameObject.SetActive(false);
             _solveButton.onClick.RemoveListener(Solve);
         }
+
+        if (_shuffleButton)
+        {
+            _shuffleButton.gameObject.SetActive(false);
+            _shuffleButton.onClick.RemoveListener(TransitToShuffleState);
+        }
     }
 
     private void TransitToConstructState()
     {
-        _stateMachine.State = _constructState;
-        _constructState.gameObject.SetActive(true);
-        (_constructState as ConstructState).Initialize(_cube.GetFaceletColors());
-        gameObject.SetActive(false);
+        _stateMachine.SwitchToState(_constructState, _cube);
+    }
+
+    private void TransitToShuffleState()
+    {
+        _stateMachine.SwitchToState(_shuffleState, _cube);
     }
 
     private void Solve()

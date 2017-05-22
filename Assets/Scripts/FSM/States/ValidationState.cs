@@ -13,12 +13,11 @@ public class ValidationState : State
     [SerializeField]
     private MessageBox _messageBox;
 
-    private byte[] _cubeConfig;
-    private CubeFactory _cubeFactory = new CubeFactory();
-
-    public void Initialize(byte[] cubeConfig)
+    public override void Enter(Cube cube)
     {
-        _cubeConfig = cubeConfig;
+        base.Enter(cube);
+
+        byte[] cubeConfig = cube.GetFaceletColors();
 
         int[] facelets = new int[6];
 
@@ -48,24 +47,21 @@ public class ValidationState : State
         }
     }
 
-    private void OnDisable()
+
+    public override void Exit()
     {
-        _messageBox.OkButton.onClick.RemoveAllListeners();        
+        base.Exit();
+
+        _messageBox.OkButton.onClick.RemoveAllListeners();
     }
 
     private void TransitToPlayState()
     {
-        _stateMachine.State = _playState;
-        _playState.gameObject.SetActive(true);
-        (_playState as PlayState).Initialize(_cubeFactory.CreateCube(_cubeConfig));
-        gameObject.SetActive(false);
+        _stateMachine.SwitchToState(_playState, _cube);
     }
 
     private void TransitToConstructState()
     {
-        _stateMachine.State = _constructState;
-        _constructState.gameObject.SetActive(true);
-        (_constructState as ConstructState).Initialize(_cubeConfig);
-        gameObject.SetActive(false);
+        _stateMachine.SwitchToState(_constructState, _cube);
     }
 }

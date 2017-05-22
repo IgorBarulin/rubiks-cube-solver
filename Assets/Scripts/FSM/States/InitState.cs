@@ -8,16 +8,10 @@ public class InitState : State
     [SerializeField]
     private State _playState;
 
-    private void OnEnable()
+    public override void Enter(Cube cube)
     {
-        _stateMachine.State = _playState;
-        _playState.gameObject.SetActive(true);
-        (_playState as PlayState).Initialize(new CubeFactory().CreateCube(null));
-        gameObject.SetActive(false);
-    }
+        base.Enter(cube);
 
-    private void OnDisable()
-    {
-
+        _stateMachine.SwitchToState(_playState, _cube);
     }
 }

@@ -31,6 +31,7 @@ namespace Assets.Scripts.CubeView
         private Queue<string> _cmdQ = new Queue<string>();
 
         private bool _rdyToNextTurn = true;
+        public bool AnimNow { get { return !_rdyToNextTurn; } }
 
         private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
         public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
@@ -88,10 +89,7 @@ namespace Assets.Scripts.CubeView
                     _facelets[Cube.EdgeFacelet[i][j]] = thisFacelets[j];
                 }
             }
-        }
 
-        private void Start()
-        {
             for (int i = 0; i < _centers.Length; i++)
             {
                 _centers[i].GetComponentsInChildren<MeshRenderer>().

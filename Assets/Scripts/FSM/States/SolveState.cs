@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.CubeModel;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SolveState : State
 {
-    public void Initialize()
+    public void Initialize(Cube cube)
     {
         
     }
