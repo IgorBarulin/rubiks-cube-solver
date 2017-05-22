@@ -36,7 +36,7 @@ public class ShuffleState : State
         _stopButton.gameObject.SetActive(true);
         _stopButton.onClick.AddListener(TransitToPlayState);
 
-        StartCoroutine(ShuffleGenerator(0.5f));
+        StartCoroutine(ShuffleGenerator(2f));
     }
 
     public override void Exit()

@@ -19,7 +19,7 @@ public class ConstructState : State
         base.Enter(cube);
 
         _constructor2d.gameObject.SetActive(true);
-        _constructor2d.Initialize(cube.GetFaceletColors());
+        _constructor2d.Initialize(_cube.GetFaceletColors());
 
         _applyButton.gameObject.SetActive(true);
         _applyButton.onClick.AddListener(TransitToValidationState);
@@ -38,6 +38,7 @@ public class ConstructState : State
 
     private void TransitToValidationState()
     {
-        _stateMachine.SwitchToState(_validationState, _cube);
+        CubeFactory factory = new CubeFactory();
+        _stateMachine.SwitchToState(_validationState, factory.CreateCube(_constructor2d.GetFacelets()));
     }
 }

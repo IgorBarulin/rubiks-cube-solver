@@ -50,7 +50,7 @@ namespace Assets.Scripts.CubeView
             _cmdQ.Enqueue(cmd);
         }
 
-        private void Awake()
+        public void Awake()
         {
             _centers = new Transform[6];
             for (int i = 0; i < _centers.Length; i++)

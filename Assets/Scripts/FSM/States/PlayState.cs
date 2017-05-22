@@ -58,7 +58,7 @@ public class PlayState : State
 
         if (_cube3D)
         {
-            //_cube3D.gameObject.SetActive(false);
+            _cube3D.gameObject.SetActive(false);
             _cube3D.OnFaceletDrag.RemoveListener(_cube.Move);
         }
 
