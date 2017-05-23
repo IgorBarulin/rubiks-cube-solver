@@ -16,6 +16,9 @@ public class ShuffleState : State
     [SerializeField]
     private State _playState;
 
+    [SerializeField]
+    private float _generationPause;
+
     private int _shuffleCount;
 
     private static readonly string[] _validMoves = "U U' R R' F F' D D' L L' B B'".Split(' ');
@@ -36,7 +39,7 @@ public class ShuffleState : State
         _stopButton.gameObject.SetActive(true);
         _stopButton.onClick.AddListener(TransitToPlayState);
 
-        StartCoroutine(ShuffleGenerator(2f));
+        StartCoroutine(ShuffleGenerator(_generationPause));
     }
 
     public override void Exit()

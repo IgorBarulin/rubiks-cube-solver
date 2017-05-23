@@ -30,12 +30,12 @@ public class PlayState : State
     {
         base.Enter(cube);
 
+        _cube3D.gameObject.SetActive(true);
+
         _cube3D.SetConfiguration(_cube.GetFaceletColors());
         _cube3D.OnFaceletDrag.AddListener(_cube.Move);
 
         _cameraController.Initialize();
-
-        _cube3D.gameObject.SetActive(true);
 
         _constructButton.gameObject.SetActive(true);
         _constructButton.onClick.AddListener(TransitToConstructState);
@@ -93,7 +93,7 @@ public class PlayState : State
 
     private void Solve()
     {
-        string solveCombo = Search.fullSolve(_cube, 20, 10000);
+        string solveCombo = Search.fullSolve(_cube, 20, 30000);
         foreach (var cmd in solveCombo.Split(' '))
         {
             switch (cmd)

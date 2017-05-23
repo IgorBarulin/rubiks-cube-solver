@@ -6,6 +6,19 @@ using UnityEngine;
 
 namespace Assets.Scripts.CubeView
 {
+    public struct DefaultState
+    {
+        public Quaternion CubeRotation;
+
+        public Quaternion[] CentersRotation;
+
+        public Quaternion[] CornersRotation;
+        public Quaternion[] EdgesRotation;
+
+        public Vector3[] CornersPosition;
+        public Vector3[] EdgesPosition;
+    }
+
     public class CubeView3D : MonoBehaviour
     {
         [Range(1f, 5f)]
@@ -36,9 +49,27 @@ namespace Assets.Scripts.CubeView
         private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
         public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
 
+        private DefaultState _defaultState = new DefaultState();
 
         public void SetConfiguration(byte[] facelets)
         {
+            StartCoroutine(SetConfigurationProcess(facelets));
+        }
+
+        private IEnumerator SetConfigurationProcess(byte[] facelets)
+        {
+            while (true)
+            {
+                if (_rdyToNextTurn)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            RestoreDefaultState();
+
             for (int i = 0; i < 48; i++)
             {
                 _facelets[i].material.color = _colorSheme.GetColor(facelets[i]);
@@ -101,6 +132,57 @@ namespace Assets.Scripts.CubeView
             foreach (var faceletHandler in faceletHandlers)
             {
                 faceletHandler.OnFaceletDrag.AddListener(AddCommandInQueue);
+            }
+
+            SaveDefaultState();
+        }
+
+        private void SaveDefaultState()
+        {
+            _defaultState.CubeRotation = transform.rotation;
+
+            _defaultState.CentersRotation = new Quaternion[_centers.Length];
+            for (int i = 0; i < _centers.Length; i++)
+            {
+                _defaultState.CentersRotation[i] = _centers[i].rotation;
+            }
+
+            _defaultState.CornersRotation = new Quaternion[_corners.Length];
+            _defaultState.CornersPosition = new Vector3[_corners.Length];
+            for (int i = 0; i < _corners.Length; i++)
+            {
+                _defaultState.CornersRotation[i] = _corners[i].rotation;
+                _defaultState.CornersPosition[i] = _corners[i].position;
+            }
+
+            _defaultState.EdgesRotation = new Quaternion[_edges.Length];
+            _defaultState.EdgesPosition = new Vector3[_edges.Length];
+            for (int i = 0; i < _edges.Length; i++)
+            {
+                _defaultState.EdgesRotation[i] = _edges[i].rotation;
+                _defaultState.EdgesPosition[i] = _edges[i].position;
+            }
+        }
+
+        private void RestoreDefaultState()
+        {
+            transform.rotation = _defaultState.CubeRotation;
+
+            for (int i = 0; i < _centers.Length; i++)
+            {
+                _centers[i].rotation = _defaultState.CentersRotation[i];
+            }
+
+            for (int i = 0; i < _corners.Length; i++)
+            {
+                _corners[i].rotation = _defaultState.CornersRotation[i];
+                _corners[i].position = _defaultState.CornersPosition[i];
+            }
+
+            for (int i = 0; i < _edges.Length; i++)
+            {
+                _edges[i].rotation = _defaultState.EdgesRotation[i];
+                _edges[i].position = _defaultState.EdgesPosition[i];
             }
         }
 
