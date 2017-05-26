@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class OnFaceletDrag : UnityEvent<string> { }
+public class OnCommand : UnityEvent<string> { }
 
 public enum Axis { X, Y, Z }
 
@@ -28,8 +28,8 @@ public class FaceletHandler : MonoBehaviour
 
     private Vector3 _startDragPosition;
 
-    private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
-    public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
+    private OnCommand _onFaceletDrag = new OnCommand();
+    public OnCommand OnFaceletDrag { get { return _onFaceletDrag; } }
 
     private void OnMouseDown()
     {

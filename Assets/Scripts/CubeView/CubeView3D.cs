@@ -46,8 +46,8 @@ namespace Assets.Scripts.CubeView
         private bool _rdyToNextTurn = true;
         public bool AnimNow { get { return !_rdyToNextTurn; } }
 
-        private OnFaceletDrag _onFaceletDrag = new OnFaceletDrag();
-        public OnFaceletDrag OnFaceletDrag { get { return _onFaceletDrag; } }
+        private OnCommand _onFaceletDrag = new OnCommand();
+        public OnCommand OnFaceletDrag { get { return _onFaceletDrag; } }
 
         private DefaultState _defaultState = new DefaultState();
 
