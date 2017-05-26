@@ -21,6 +21,8 @@ public class PlayState : State
     [SerializeField]
     private State _shuffleState;
     [SerializeField]
+    private State _resultState;
+    [SerializeField]
     private Button _shuffleButton;
 
     private Vector2 _startDragPosition;
@@ -41,7 +43,7 @@ public class PlayState : State
         _constructButton.onClick.AddListener(TransitToConstructState);
 
         _solveButton.gameObject.SetActive(true);
-        _solveButton.onClick.AddListener(Solve);
+        _solveButton.onClick.AddListener(TransitToResultState);
 
         _shuffleButton.gameObject.SetActive(true);
         _shuffleButton.onClick.AddListener(TransitToShuffleState);
@@ -71,7 +73,7 @@ public class PlayState : State
         if (_solveButton)
         {
             _solveButton.gameObject.SetActive(false);
-            _solveButton.onClick.RemoveListener(Solve);
+            _solveButton.onClick.RemoveListener(TransitToResultState);
         }
 
         if (_shuffleButton)
@@ -91,43 +93,9 @@ public class PlayState : State
         _stateMachine.SwitchToState(_shuffleState, _cube);
     }
 
-    private void Solve()
+    private void TransitToResultState()
     {
-        string solveCombo = Search.fullSolve(_cube, 20, 30000);
-        foreach (var cmd in solveCombo.Split(' '))
-        {
-            switch (cmd)
-            {
-                case "U2":
-                    _cube3D.AddCommandInQueue("U");
-                    _cube3D.AddCommandInQueue("U");
-                    break;
-                case "R2":
-                    _cube3D.AddCommandInQueue("R");
-                    _cube3D.AddCommandInQueue("R");
-                    break;
-                case "F2":
-                    _cube3D.AddCommandInQueue("F");
-                    _cube3D.AddCommandInQueue("F");
-                    break;
-                case "L2":
-                    _cube3D.AddCommandInQueue("L");
-                    _cube3D.AddCommandInQueue("L");
-                    break;
-                case "B2":
-                    _cube3D.AddCommandInQueue("B");
-                    _cube3D.AddCommandInQueue("B");
-                    break;
-                case "D2":
-                    _cube3D.AddCommandInQueue("D");
-                    _cube3D.AddCommandInQueue("D");
-                    break;
-                default:
-                    _cube3D.AddCommandInQueue(cmd);
-                    break;
-            }
-        }
-        Debug.Log(solveCombo);
+        _stateMachine.SwitchToState(_resultState, _cube);
     }
 
     private void Update()

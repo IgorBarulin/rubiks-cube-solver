@@ -9,7 +9,9 @@ public class Scroller : UIBehaviour
     public CommandView CurrentItem { get { return _items[_curItem]; } }
 
     private RectTransform _contentRt;
-    private CommandView[] _items;
+    private CommandView[] _itemStock;
+
+    private List<CommandView> _items = new List<CommandView>();
 
     private int _curItem;
 
@@ -19,12 +21,23 @@ public class Scroller : UIBehaviour
 
         ScrollRect scrollRect = gameObject.GetComponentInChildren<ScrollRect>();
         _contentRt = scrollRect.content.transform as RectTransform;
-        _items = gameObject.GetComponentsInChildren<CommandView>();
+        _itemStock = gameObject.GetComponentsInChildren<CommandView>();
     }
 
-    protected override void Start()
+    public void Initialize(string[] combination)
     {
-        base.Start();
+        _items.Clear();
+        int i = 0;
+        foreach (var item in _itemStock)
+        {
+            item.gameObject.SetActive(i < combination.Length);
+            if (i < combination.Length)
+            {
+                item.Initialize(combination[i]);
+                _items.Add(item);
+            }
+            i++;
+        }
 
         _curItem = 0;
         _items[_curItem].Backlight = true;
@@ -32,12 +45,12 @@ public class Scroller : UIBehaviour
 
     public bool Next()
     {
-        if (_curItem + 1 < _items.Length)
+        if (_curItem + 1 < _items.Count)
         {
             _items[_curItem].Backlight = false;
             _items[++_curItem].Backlight = true;
 
-            if (_curItem > 2 && _curItem < _items.Length - 2)
+            if (_curItem > 2 && _curItem < _items.Count - 2)
             {
                 RectTransform itemRect = _items[_curItem].transform as RectTransform;
                 _contentRt.anchoredPosition -= new Vector2(itemRect.sizeDelta.x, 0);
@@ -56,7 +69,7 @@ public class Scroller : UIBehaviour
             _items[_curItem].Backlight = false;
             _items[--_curItem].Backlight = true;
 
-            if (_curItem > 1 && _curItem < _items.Length - 3)
+            if (_curItem > 1 && _curItem < _items.Count - 3)
             {
                 RectTransform itemRect = _items[_curItem].transform as RectTransform;
                 _contentRt.anchoredPosition += new Vector2(itemRect.sizeDelta.x, 0);

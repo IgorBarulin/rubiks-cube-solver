@@ -257,21 +257,27 @@ namespace Assets.Scripts.CubeView
             {
                 case "U":
                 case "U'":
+                case "U2":
                     return _centers[0];
                 case "R":
                 case "R'":
+                case "R2":
                     return _centers[1];
                 case "F":
                 case "F'":
+                case "F2":
                     return _centers[2];
                 case "L":
                 case "L'":
+                case "L2":
                     return _centers[3];
                 case "B":
                 case "B'":
+                case "B2":
                     return _centers[4];
                 case "D":
                 case "D'":
+                case "D2":
                     return _centers[5];
             }
 

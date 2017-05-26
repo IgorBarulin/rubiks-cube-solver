@@ -24,6 +24,11 @@ public class ResultViewer : UIBehaviour
 
     private Coroutine _playProcess;
 
+    public void Initialize(string[] combination)
+    {
+        _scroller.Initialize(combination);
+    }
+
     public void Play()
     {
         if (_playProcess == null)
@@ -42,7 +47,7 @@ public class ResultViewer : UIBehaviour
     {
         while (_scroller.Next())
         {
-            _onCommand.Invoke(_scroller.CurrentItem.Command);
+            Next();
             Debug.Log(_scroller.CurrentItem.GetComponentInChildren<Text>().text);
             yield return new WaitForSeconds(_period);
         }
@@ -67,11 +72,46 @@ public class ResultViewer : UIBehaviour
 
     public void Next()
     {
-        _scroller.Next();
+        if (_scroller.Next())
+            _onCommand.Invoke(_scroller.CurrentItem.Command);
     }
 
     public void Prev()
     {
-        _scroller.Prev();
+        if (_scroller.Prev())
+            _onCommand.Invoke(ReverseCommand(_scroller.CurrentItem.Command));
+    }
+
+    private string ReverseCommand(string cmd)
+    {
+        switch (cmd)
+        {
+            case "U":
+                return "U'";
+            case "U'":
+                return "U";
+            case "R":
+                return "R'";
+            case "R'":
+                return "R";
+            case "F":
+                return "F'";
+            case "F'":
+                return "F";
+            case "L":
+                return "L'";
+            case "L'":
+                return "L";
+            case "B":
+                return "B'";
+            case "B'":
+                return "B";
+            case "D":
+                return "D'";
+            case "D'":
+                return "D";
+            default:
+                return cmd;
+        }
     }
 }
