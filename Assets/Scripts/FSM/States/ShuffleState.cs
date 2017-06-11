@@ -12,6 +12,8 @@ public class ShuffleState : State
     [SerializeField]
     private Text _shuffleCountText;
     [SerializeField]
+    private GameObject _shuffleBg;
+    [SerializeField]
     private Button _stopButton;
     [SerializeField]
     private State _playState;
@@ -35,6 +37,7 @@ public class ShuffleState : State
         _shuffleCountText.text = _shuffleCount.ToString();
 
         _shuffleCountText.gameObject.SetActive(true);
+        _shuffleBg.gameObject.SetActive(true);
 
         _stopButton.gameObject.SetActive(true);
         _stopButton.onClick.AddListener(TransitToPlayState);
@@ -49,6 +52,7 @@ public class ShuffleState : State
         StopAllCoroutines();
 
         _shuffleCountText.gameObject.SetActive(false);
+        _shuffleBg.gameObject.SetActive(false);
 
         _stopButton.gameObject.SetActive(false);
         _stopButton.onClick.RemoveListener(TransitToPlayState);

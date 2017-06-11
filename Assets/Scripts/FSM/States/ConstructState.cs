@@ -10,6 +10,8 @@ public class ConstructState : State
     [SerializeField]
     private Constructor2D _constructor2d;
     [SerializeField]
+    private GameObject _palette;
+    [SerializeField]
     private State _validationState;
     [SerializeField]
     private Button _applyButton;
@@ -21,6 +23,8 @@ public class ConstructState : State
         _constructor2d.gameObject.SetActive(true);
         _constructor2d.Initialize(_cube.GetFaceletColors());
 
+        _palette.gameObject.SetActive(true);
+
         _applyButton.gameObject.SetActive(true);
         _applyButton.onClick.AddListener(TransitToValidationState);
     }
@@ -31,6 +35,8 @@ public class ConstructState : State
 
         if(_constructor2d)
             _constructor2d.gameObject.SetActive(false);
+
+        _palette.gameObject.SetActive(false);
 
         _applyButton.gameObject.SetActive(false);
         _applyButton.onClick.RemoveListener(TransitToValidationState);

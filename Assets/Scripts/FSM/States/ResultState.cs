@@ -4,27 +4,43 @@ using Assets.Scripts.CubeModel;
 using UnityEngine;
 using Assets.Scripts.CubeView;
 using Assets.Scripts.Solver;
+using UnityEngine.UI;
 
 public class ResultState : State
 {
     [SerializeField]
     private CubeView3D _cube3D;
     [SerializeField]
-    private ResultViewer _resultViewer;
+    private GameObject _resultPanel;
+    [SerializeField]
+    private Text _resultText;
+    [SerializeField]
+    private Button _returnButton;
+    [SerializeField]
+    private State _playState;
 
     public override void Enter(Cube cube)
     {
         base.Enter(cube);
 
-        _resultViewer.gameObject.SetActive(true);
-
         _cube3D.gameObject.SetActive(true);
+
+        _returnButton.gameObject.SetActive(true);
+        _returnButton.onClick.AddListener(TransitToPlayState);
 
         string solveCombo = Search.fullSolve(_cube, 20, 30000);
         Debug.Log(solveCombo);
 
-        _resultViewer.Initialize(solveCombo.Split(' '));
-        _resultViewer.OnCommand.AddListener(AddTo3DQ);
+        _resultPanel.gameObject.SetActive(true);
+        _resultText.gameObject.SetActive(true);
+
+        _resultText.text = solveCombo;
+
+        _cube.Move(solveCombo);
+        foreach (var cmd in solveCombo.Split(' '))
+        {
+            _cube3D.AddCommandInQueue(cmd);
+        }
     }
 
     private void AddTo3DQ(string cmd)
@@ -65,9 +81,20 @@ public class ResultState : State
     {
         base.Exit();
 
-        _resultViewer.gameObject.SetActive(false);
-        _resultViewer.OnCommand.RemoveListener(AddTo3DQ);
-
         _cube3D.gameObject.SetActive(false);
+
+        if (_returnButton)
+        {
+            _returnButton.gameObject.SetActive(false);
+            _returnButton.onClick.RemoveListener(TransitToPlayState);
+        }
+
+        _resultPanel.gameObject.SetActive(false);
+        _resultText.gameObject.SetActive(false);
+    }
+
+    private void TransitToPlayState()
+    {
+        _stateMachine.SwitchToState(_playState, _cube);
     }
 }
