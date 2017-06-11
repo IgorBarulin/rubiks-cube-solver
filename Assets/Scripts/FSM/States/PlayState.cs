@@ -24,6 +24,8 @@ public class PlayState : State
     private State _resultState;
     [SerializeField]
     private Button _shuffleButton;
+    [SerializeField]
+    private GameObject _quitPanel;
 
     private Vector2 _startDragPosition;
 
@@ -36,6 +38,7 @@ public class PlayState : State
 
         _cube3D.SetConfiguration(_cube.GetFaceletColors());
         _cube3D.OnFaceletDrag.AddListener(_cube.Move);
+        _cube3D.Lock = false;
 
         _cameraController.Initialize();
 
@@ -44,9 +47,12 @@ public class PlayState : State
 
         _solveButton.gameObject.SetActive(true);
         _solveButton.onClick.AddListener(TransitToResultState);
+        _solveButton.interactable = false;
 
         _shuffleButton.gameObject.SetActive(true);
         _shuffleButton.onClick.AddListener(TransitToShuffleState);
+
+        _quitPanel.gameObject.SetActive(true);
     }
 
     public override void Exit()
@@ -62,6 +68,7 @@ public class PlayState : State
         {
             _cube3D.gameObject.SetActive(false);
             _cube3D.OnFaceletDrag.RemoveListener(_cube.Move);
+            _cube3D.Lock = true;
         }
 
         if (_constructButton)
@@ -80,6 +87,11 @@ public class PlayState : State
         {
             _shuffleButton.gameObject.SetActive(false);
             _shuffleButton.onClick.RemoveListener(TransitToShuffleState);
+        }
+
+        if (_quitPanel)
+        {
+            _quitPanel.gameObject.SetActive(false);
         }
     }
 
@@ -101,6 +113,8 @@ public class PlayState : State
     private void Update()
     {
         HandleCameraMoving();
+
+        _solveButton.interactable = !_cube.IsSolved;
     }
 
     private void HandleCameraMoving()

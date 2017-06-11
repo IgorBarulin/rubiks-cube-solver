@@ -16,7 +16,9 @@ namespace Assets.Scripts.FSM
         public void SwitchToState(State state, Cube cube)
         {
             State.Exit();
+            State.gameObject.SetActive(false);
             State = state;
+            State.gameObject.SetActive(true);
             State.Enter(cube);
         }
     }

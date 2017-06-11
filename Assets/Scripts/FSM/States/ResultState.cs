@@ -18,6 +18,10 @@ public class ResultState : State
     private Button _returnButton;
     [SerializeField]
     private State _playState;
+    [SerializeField]
+    private GameObject _solutionLenBg;
+    [SerializeField]
+    private Text _solutionLen;
 
     public override void Enter(Cube cube)
     {
@@ -27,8 +31,9 @@ public class ResultState : State
 
         _returnButton.gameObject.SetActive(true);
         _returnButton.onClick.AddListener(TransitToPlayState);
+        _returnButton.interactable = false;
 
-        string solveCombo = Search.fullSolve(_cube, 20, 30000);
+        string solveCombo = Search.fullSolve(_cube, 22, 30000);
         Debug.Log(solveCombo);
 
         _resultPanel.gameObject.SetActive(true);
@@ -36,10 +41,13 @@ public class ResultState : State
 
         _resultText.text = solveCombo;
 
+        _solutionLenBg.gameObject.SetActive(true);
+        _solutionLen.text = solveCombo.Split(' ').Length.ToString();
+
         _cube.Move(solveCombo);
         foreach (var cmd in solveCombo.Split(' '))
         {
-            _cube3D.AddCommandInQueue(cmd);
+            AddTo3DQ(cmd);
         }
     }
 
@@ -82,6 +90,7 @@ public class ResultState : State
         base.Exit();
 
         _cube3D.gameObject.SetActive(false);
+        _cube3D.ClearCmdQ();
 
         if (_returnButton)
         {
@@ -91,10 +100,17 @@ public class ResultState : State
 
         _resultPanel.gameObject.SetActive(false);
         _resultText.gameObject.SetActive(false);
+
+        _solutionLenBg.gameObject.SetActive(false);
     }
 
     private void TransitToPlayState()
     {
         _stateMachine.SwitchToState(_playState, _cube);
+    }
+
+    private void Update()
+    {
+        _returnButton.interactable = _cube3D.CmdQLen == 0 && !_cube3D.AnimNow;
     }
 }

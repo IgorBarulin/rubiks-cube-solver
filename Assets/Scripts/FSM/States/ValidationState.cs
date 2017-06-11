@@ -12,10 +12,14 @@ public class ValidationState : State
     private State _constructState;
     [SerializeField]
     private MessageBox _messageBox;
+    [SerializeField]
+    private GameObject _panel;
 
     public override void Enter(Cube cube)
     {
         base.Enter(cube);
+
+        _panel.gameObject.SetActive(false);
 
         byte[] cubeConfig = cube.GetFaceletColors();
 
@@ -53,6 +57,8 @@ public class ValidationState : State
         base.Exit();
 
         _messageBox.OkButton.onClick.RemoveAllListeners();
+
+        _panel.gameObject.SetActive(true);
     }
 
     private void TransitToPlayState()

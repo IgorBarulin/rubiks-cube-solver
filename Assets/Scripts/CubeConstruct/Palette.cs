@@ -43,15 +43,22 @@ namespace Assets.Scripts.CubeConstruct
             {
                 _paints[i].Initialize(i, _colorSheme.GetColor(i));
                 _paints[i].OnPaintViewClick.AddListener(SelectColor);
+                _paints[i].Mark = false;
             }
 
             _selectedColor = _colorSheme.GetColor(0);
+            _paints[0].Mark = true;
         }
 
         private void SelectColor(byte id)
         {
             _selectedId = id;
             _selectedColor = _colorSheme.GetColor(id);
+
+            for (int i = 0; i < 6; i++)
+            {
+                _paints[i].Mark = i == id;
+            }
         }
     }
 }

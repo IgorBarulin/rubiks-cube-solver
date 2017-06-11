@@ -15,6 +15,10 @@ public class ConstructState : State
     private State _validationState;
     [SerializeField]
     private Button _applyButton;
+    [SerializeField]
+    private GameObject _configPanel;
+    [SerializeField]
+    private Button _solvedButton;
 
     public override void Enter(Cube cube)
     {
@@ -27,6 +31,9 @@ public class ConstructState : State
 
         _applyButton.gameObject.SetActive(true);
         _applyButton.onClick.AddListener(TransitToValidationState);
+
+        _configPanel.gameObject.SetActive(true);
+        _solvedButton.onClick.AddListener(Solved);
     }
 
     public override void Exit()
@@ -40,11 +47,19 @@ public class ConstructState : State
 
         _applyButton.gameObject.SetActive(false);
         _applyButton.onClick.RemoveListener(TransitToValidationState);
+
+        _configPanel.gameObject.SetActive(false);
+        _solvedButton.onClick.RemoveListener(Solved);
     }
 
     private void TransitToValidationState()
     {
         CubeFactory factory = new CubeFactory();
         _stateMachine.SwitchToState(_validationState, factory.CreateCube(_constructor2d.GetFacelets()));
+    }
+
+    private void Solved()
+    {
+        _constructor2d.Initialize(new CubeFactory().CreateCube(null).GetFaceletColors());
     }
 }

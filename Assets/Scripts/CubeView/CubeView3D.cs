@@ -41,6 +41,7 @@ namespace Assets.Scripts.CubeView
 
         private MeshRenderer[] _facelets;
 
+        public int CmdQLen { get { return _cmdQ.Count; } }
         private Queue<string> _cmdQ = new Queue<string>();
 
         private bool _rdyToNextTurn = true;
@@ -50,6 +51,8 @@ namespace Assets.Scripts.CubeView
         public OnCommand OnFaceletDrag { get { return _onFaceletDrag; } }
 
         private DefaultState _defaultState = new DefaultState();
+
+        public bool Lock { get; set; }
 
         public void SetConfiguration(byte[] facelets)
         {
@@ -79,6 +82,17 @@ namespace Assets.Scripts.CubeView
         public void AddCommandInQueue(string cmd)
         {
             _cmdQ.Enqueue(cmd);
+        }
+
+        private void AddCommandInQueueFacelets(string cmd)
+        {
+            if (!Lock)
+                _cmdQ.Enqueue(cmd);
+        }
+
+        public void ClearCmdQ()
+        {
+            _cmdQ.Clear();
         }
 
         public void Awake()
@@ -131,7 +145,7 @@ namespace Assets.Scripts.CubeView
             FaceletHandler[] faceletHandlers = gameObject.GetComponentsInChildren<FaceletHandler>();
             foreach (var faceletHandler in faceletHandlers)
             {
-                faceletHandler.OnFaceletDrag.AddListener(AddCommandInQueue);
+                faceletHandler.OnFaceletDrag.AddListener(AddCommandInQueueFacelets);
             }
 
             SaveDefaultState();

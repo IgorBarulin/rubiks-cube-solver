@@ -14,8 +14,12 @@ namespace Assets.Scripts.CubeConstruct
     {
         [SerializeField]
         private Image _view;
+        [SerializeField]
+        private Image _cross;
 
         private byte _id;
+
+        public bool Mark { set { _cross.gameObject.SetActive(value); } }
 
         private OnFaceletClick _onPaintViewClick = new OnFaceletClick();
         public OnFaceletClick OnPaintViewClick

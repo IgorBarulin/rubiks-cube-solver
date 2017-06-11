@@ -23,7 +23,8 @@ public class ShuffleState : State
 
     private int _shuffleCount;
 
-    private static readonly string[] _validMoves = "U U' R R' F F' D D' L L' B B'".Split(' ');
+    private static List<string> _validMoves = new List<string>() { "U", "U'", "R", "R'", "F", "F'", "D", "D'", "L", "L'", "B" };
+    private string _restoreMove = "B'";
 
     public override void Enter(Cube cube)
     {
@@ -57,6 +58,7 @@ public class ShuffleState : State
         _stopButton.gameObject.SetActive(false);
         _stopButton.onClick.RemoveListener(TransitToPlayState);
 
+        _cube3D.ClearCmdQ();
         _cube3D.OnFaceletDrag.RemoveListener(_cube.Move);
     }
 
@@ -64,7 +66,10 @@ public class ShuffleState : State
     {
         while (true)
         {
-            string move = _validMoves[Random.Range(0, _validMoves.Length)];
+            string move = _validMoves[Random.Range(0, _validMoves.Count)];
+            _validMoves.Add(_restoreMove);
+            _restoreMove = GetNegativeMove(move);
+            _validMoves.Remove(_restoreMove);
             _cube3D.AddCommandInQueue(move);
 
             _shuffleCount++;
@@ -79,5 +84,17 @@ public class ShuffleState : State
     private void TransitToPlayState()
     {
         _stateMachine.SwitchToState(_playState, _cube);
+    }
+
+    private string GetNegativeMove(string move)
+    {
+        if (move.Length > 1)
+        {
+            return move[0].ToString();
+        }
+        else
+        {
+            return move + "'";
+        }
     }
 }
