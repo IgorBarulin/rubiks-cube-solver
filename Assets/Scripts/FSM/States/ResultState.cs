@@ -33,7 +33,7 @@ public class ResultState : State
         _returnButton.onClick.AddListener(TransitToPlayState);
         _returnButton.interactable = false;
 
-        string solveCombo = Search.fullSolve(_cube, 22, 30000);
+        string solveCombo = Search.fullSolve(_cube, 20, 30000);
         Debug.Log(solveCombo);
 
         _resultPanel.gameObject.SetActive(true);
