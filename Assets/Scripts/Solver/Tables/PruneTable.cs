@@ -41,10 +41,10 @@ namespace Assets.Scripts.Solver.Tables
 
         // Prune tables
 
-        public static readonly PruneTable pruneCO = BinLoad.loadPruneTable("Assets/Tables/prune/co_ud_prun");
-        public static readonly PruneTable pruneEO = BinLoad.loadPruneTable("Assets/Tables/prune/eo_ud_prun");
+        public static readonly PruneTable pruneCO = BinLoad.loadPruneTable("Tables/prune/co_ud_prun");
+        public static readonly PruneTable pruneEO = BinLoad.loadPruneTable("Tables/prune/eo_ud_prun");
 
-        public static readonly PruneTable pruneCP = BinLoad.loadPruneTable("Assets/Tables/prune/cp_ud2_prun");
-        public static readonly PruneTable pruneEP2 = BinLoad.loadPruneTable("Assets/Tables/prune/ep2_ud2_prun");
+        public static readonly PruneTable pruneCP = BinLoad.loadPruneTable("Tables/prune/cp_ud2_prun");
+        public static readonly PruneTable pruneEP2 = BinLoad.loadPruneTable("Tables/prune/ep2_ud2_prun");
     }
 }

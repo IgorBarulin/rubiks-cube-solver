@@ -9,7 +9,9 @@ namespace Assets.Scripts.Solver.Tables
     {
         public static ushort[,] loadShortTable2D(string path, int chunksize = 18)
         {
-            var bytes = File.ReadAllBytes(path);
+            var obj = Resources.Load(path);
+            var asset =  obj as TextAsset;            
+            var bytes = asset.bytes;// File.ReadAllBytes(path);
             int len1d = bytes.Length / chunksize / 2;
             ushort[,] values = new ushort[len1d, chunksize];
             int i, j;
@@ -30,7 +32,10 @@ namespace Assets.Scripts.Solver.Tables
 
         public static PruneTable loadPruneTable(string path)
         {
-            return new PruneTable(File.ReadAllBytes(path));
+            var obj = Resources.Load(path);
+            var asset = obj as TextAsset;
+            var bytes = asset.bytes;// File.ReadAllBytes(path);
+            return new PruneTable(bytes);
         }
     }
 }
